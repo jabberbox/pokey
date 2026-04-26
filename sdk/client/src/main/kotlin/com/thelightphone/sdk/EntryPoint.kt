@@ -1,6 +1,7 @@
 package com.thelightphone.sdk
 
 import androidx.annotation.Keep
+import com.thelightphone.sdk.shared.LightServerHandshake
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 
@@ -10,5 +11,5 @@ import kotlinx.coroutines.flow.StateFlow
 annotation class EntryPoint
 
 interface LightEntryPoint {
-    fun onToolCreate(lightOsData: StateFlow<LightOsData?>, toolScope: CoroutineScope)
+    fun onToolCreate(lightOsData: StateFlow<LightServerHandshake?>, toolScope: CoroutineScope)
 }

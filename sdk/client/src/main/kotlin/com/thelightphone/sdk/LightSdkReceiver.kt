@@ -5,7 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.thelightphone.sdk.LightCrypto.LIGHTOS_PACKAGE
+import com.thelightphone.sdk.shared.LightCrypto
 
 class LightSdkReceiver : BroadcastReceiver() {
 
@@ -18,7 +18,7 @@ class LightSdkReceiver : BroadcastReceiver() {
 
         val encryptedData = intent?.extras?.getString("data") ?: return
 
-        val decrypted = runCatching { LightCrypto.decrypt(encryptedData) }
+        val decrypted = runCatching { LightClientCrypto.decrypt(encryptedData) }
             .onFailure { Log.e(TAG, "broadcast decryption error") }
             .getOrNull() ?: return
 
@@ -28,6 +28,6 @@ class LightSdkReceiver : BroadcastReceiver() {
     private fun isFromLightOS(intent: Intent?): Boolean {
         val senderIdentity = intent?.getParcelableExtra("sender_identity", PendingIntent::class.java)
             ?: return false
-        return senderIdentity.creatorPackage == LIGHTOS_PACKAGE
+        return senderIdentity.creatorPackage == BuildConfig.LIGHT_SERVER_PACKAGE
     }
 }

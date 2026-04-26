@@ -165,7 +165,8 @@ class LightSdkPlugin : Plugin<Project> {
      */
     private fun validateSourceFiles(project: Project, violations: MutableList<String>) {
         // Only scan consumer projects, not the SDK itself
-        if (project.name == "sdk") return
+        val sdkModules = setOf("client", "shared", "ui", "server", "emulator")
+        if (project.name in sdkModules) return
 
         val srcDirs = project.projectDir.resolve("src")
         if (!srcDirs.exists()) return

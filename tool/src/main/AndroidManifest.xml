@@ -19,16 +19,16 @@
             android:exported="true"
             android:permission="normal">
             <intent-filter>
-                <action android:name="com.thelightphone.ACTION_SDK_MARKER" />
+                <action android:name="com.thelightphone.sdk.ACTION_SDK_MARKER" />
             </intent-filter>
             <meta-data
-                android:name="com.thelightphone.SDK_VERSION"
+                android:name="com.thelightphone.sdk.SDK_VERSION"
                 android:value="${sdkVersion}" />
         </receiver>
     </application>
     <queries>
         <intent>
-            <action android:name="com.thelightphone.ACTION_SDK_MARKER" />
+            <action android:name="com.thelightphone.sdk.ACTION_SDK_MARKER" />
         </intent>
     </queries>
 </manifest>

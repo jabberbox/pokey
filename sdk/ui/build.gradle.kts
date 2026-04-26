@@ -1,31 +1,18 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.light.sdk)
 }
 
-val appId = "com.thelightphone.app"
+group = property("sdkGroup") as String
+version = property("sdkVersion") as String
 
 android {
-    namespace = appId
+    namespace = "com.thelightphone.sdk.ui"
     compileSdk = rootProject.ext["compileSdk"] as Int
 
     defaultConfig {
-        applicationId = appId
         minSdk = rootProject.ext["minSdk"] as Int
-        targetSdk = rootProject.ext["targetSdk"] as Int
-        versionCode = 1
-        versionName = "1.0"
-
-        manifestPlaceholders["sdkVersion"] = property("sdkVersion") as String
-    }
-
-    lint {
-        warningsAsErrors = false
-        error += "RestrictedApi"
     }
 
     compileOptions {
@@ -41,6 +28,13 @@ kotlin {
 }
 
 dependencies {
-    implementation(project(":sdk:client"))
-    testImplementation(libs.kotlin.test)
+    api(project(":sdk:shared"))
+    api(platform(libs.compose.bom))
+    api(libs.compose.ui)
+    api(libs.compose.ui.graphics)
+    api(libs.compose.foundation)
+    api(libs.compose.material3)
+    api(libs.compose.runtime)
+    debugApi(libs.compose.ui.tooling)
+    api(libs.compose.ui.tooling.preview)
 }

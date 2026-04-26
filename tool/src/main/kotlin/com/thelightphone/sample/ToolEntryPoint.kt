@@ -3,7 +3,7 @@ package com.thelightphone.sample
 import android.util.Log
 import com.thelightphone.sdk.EntryPoint
 import com.thelightphone.sdk.LightEntryPoint
-import com.thelightphone.sdk.LightOsData
+import com.thelightphone.sdk.shared.LightServerHandshake
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 object ToolEntryPoint : LightEntryPoint {
     // called when Tool first launches, use to initialize dependencies etc
     override fun onToolCreate(
-        lightOsData: StateFlow<LightOsData?>,
+        lightOsData: StateFlow<LightServerHandshake?>,
         toolScope: CoroutineScope
     ) {
         toolScope.launch {

@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal fun LightBackBar(onBack: () -> Unit) {
+fun LightBackBar(onBack: () -> Unit) {
     Surface(
         tonalElevation = 2.dp,
         modifier = Modifier.fillMaxWidth(),

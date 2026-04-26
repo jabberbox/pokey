@@ -1,32 +1,20 @@
-package com.thelightphone.sdk
+package com.thelightphone.sdk.shared
 
-import android.security.keystore.KeyGenParameterSpec
-import android.security.keystore.KeyProperties
-import android.util.Base64
+import java.io.ByteArrayOutputStream
+import java.security.KeyFactory
 import java.security.KeyPairGenerator
 import java.security.KeyStore
+import java.security.PrivateKey
+import java.security.SecureRandom
 import java.security.spec.ECGenParameterSpec
 import java.security.spec.X509EncodedKeySpec
 import javax.crypto.Cipher
 import javax.crypto.KeyAgreement
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
+import kotlin.io.encoding.Base64
 
-internal object LightCrypto {
-
-    const val LIGHTOS_PACKAGE = "com.lightos"
-    private const val KEYSTORE_ALIAS = "com.thelightphone.sdk.eckey"
-    private const val KEYSTORE_PROVIDER = "AndroidKeyStore"
-
-    /**
-     * Returns the Base64-encoded X.509 public key, generating a new key pair on first call.
-     */
-    fun getPublicKeyBase64(): String {
-        ensureKeyPair()
-        val keyStore = KeyStore.getInstance(KEYSTORE_PROVIDER).apply { load(null) }
-        val publicKey = keyStore.getCertificate(KEYSTORE_ALIAS).publicKey
-        return Base64.encodeToString(publicKey.encoded, Base64.NO_WRAP)
-    }
+object LightCrypto {
 
     /**
      * Decrypts an ECIES payload using the device-generated private key.
@@ -37,8 +25,8 @@ internal object LightCrypto {
      *   [12-byte IV]
      *   [AES-GCM ciphertext + 16-byte auth tag]
      */
-    fun decrypt(encryptedBase64: String): String {
-        val payload = Base64.decode(encryptedBase64, Base64.NO_WRAP)
+    fun decrypt(privateKey: PrivateKey, encryptedBase64: String): String {
+        val payload = Base64.decode(encryptedBase64)
         var offset = 0
 
         // Read ephemeral public key
@@ -56,12 +44,8 @@ internal object LightCrypto {
         // Remaining is ciphertext + GCM tag
         val ciphertext = payload.sliceArray(offset until payload.size)
 
-        // Get private key from Keystore
-        val keyStore = KeyStore.getInstance(KEYSTORE_PROVIDER).apply { load(null) }
-        val privateKey = keyStore.getKey(KEYSTORE_ALIAS, null) as java.security.PrivateKey
-
         // Reconstruct ephemeral public key
-        val keyFactory = java.security.KeyFactory.getInstance("EC")
+        val keyFactory = KeyFactory.getInstance("EC")
         val ephemeralPublicKey = keyFactory.generatePublic(X509EncodedKeySpec(ephemeralKeyBytes))
 
         // ECDH key agreement
@@ -80,20 +64,40 @@ internal object LightCrypto {
         return String(cipher.doFinal(ciphertext), Charsets.UTF_8)
     }
 
-    private fun ensureKeyPair() {
-        val keyStore = KeyStore.getInstance(KEYSTORE_PROVIDER).apply { load(null) }
-        if (keyStore.containsAlias(KEYSTORE_ALIAS)) return
+    fun encrypt(data: String, publicKeyBase64: String): String {
+        val publicKeyBytes = Base64.decode(publicKeyBase64)
+        val keyFactory = KeyFactory.getInstance("EC")
+        val recipientPublicKey = keyFactory.generatePublic(X509EncodedKeySpec(publicKeyBytes))
 
-        val spec = KeyGenParameterSpec.Builder(
-            KEYSTORE_ALIAS,
-            KeyProperties.PURPOSE_AGREE_KEY
-        )
-            .setAlgorithmParameterSpec(ECGenParameterSpec("secp256r1"))
-            .build()
+        val keyPairGenerator = KeyPairGenerator.getInstance("EC")
+        keyPairGenerator.initialize(ECGenParameterSpec("secp256r1"))
+        val ephemeralKeyPair = keyPairGenerator.generateKeyPair()
 
-        KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_EC, KEYSTORE_PROVIDER).apply {
-            initialize(spec)
-            generateKeyPair()
-        }
+        val keyAgreement = KeyAgreement.getInstance("ECDH")
+        keyAgreement.init(ephemeralKeyPair.private)
+        keyAgreement.doPhase(recipientPublicKey, true)
+        val sharedSecret = keyAgreement.generateSecret()
+
+        val aesKeyBytes = java.security.MessageDigest.getInstance("SHA-256").digest(sharedSecret)
+        val aesKey = SecretKeySpec(aesKeyBytes, "AES")
+
+        val iv = ByteArray(12)
+        SecureRandom().nextBytes(iv)
+
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.ENCRYPT_MODE, aesKey, GCMParameterSpec(128, iv))
+        val ciphertext = cipher.doFinal(data.toByteArray(Charsets.UTF_8))
+
+        val ephemeralPublicKeyBytes = ephemeralKeyPair.public.encoded
+        val ephemeralKeySize = ephemeralPublicKeyBytes.size
+
+        val payload = ByteArrayOutputStream()
+        payload.write((ephemeralKeySize shr 8) and 0xFF)
+        payload.write(ephemeralKeySize and 0xFF)
+        payload.write(ephemeralPublicKeyBytes)
+        payload.write(iv)
+        payload.write(ciphertext)
+
+        return Base64.encode(payload.toByteArray())
     }
 }
