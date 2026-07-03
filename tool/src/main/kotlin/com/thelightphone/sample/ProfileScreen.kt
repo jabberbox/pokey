@@ -2,7 +2,6 @@ package com.thelightphone.sample
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -129,36 +128,33 @@ class ProfileScreen(
                         title = "Units",
                     )
 
-                    Row(modifier = Modifier.padding(bottom = 1.5f.gridUnitsAsDp())) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            LightText(
-                                text = "Beginning weight",
-                                variant = LightTextVariant.Detail,
-                                modifier = Modifier.padding(bottom = 0.25f.gridUnitsAsDp()),
-                            )
-                            WeightSpinnerRow(
-                                weightValue = beginningWeightValue,
-                                unitLabel = weightUnit.label,
-                                onShiftWhole = viewModel::shiftBeginningWeightWhole,
-                                onShiftTenth = viewModel::shiftBeginningWeightTenth,
-                                centered = false,
-                            )
-                        }
-                        Column(modifier = Modifier.weight(1f)) {
-                            LightText(
-                                text = "Goal weight",
-                                variant = LightTextVariant.Detail,
-                                modifier = Modifier.padding(bottom = 0.25f.gridUnitsAsDp()),
-                            )
-                            WeightSpinnerRow(
-                                weightValue = goalWeightValue,
-                                unitLabel = weightUnit.label,
-                                onShiftWhole = viewModel::shiftGoalWeightWhole,
-                                onShiftTenth = viewModel::shiftGoalWeightTenth,
-                                centered = false,
-                            )
-                        }
-                    }
+                    LightText(
+                        text = "Beginning weight",
+                        variant = LightTextVariant.Detail,
+                        modifier = Modifier.padding(bottom = 0.25f.gridUnitsAsDp()),
+                    )
+                    WeightSpinnerRow(
+                        weightValue = beginningWeightValue,
+                        unitLabel = weightUnit.label,
+                        onShiftWhole = viewModel::shiftBeginningWeightWhole,
+                        onShiftTenth = viewModel::shiftBeginningWeightTenth,
+                        centered = false,
+                        modifier = Modifier.padding(bottom = 1.5f.gridUnitsAsDp()),
+                    )
+
+                    LightText(
+                        text = "Goal weight",
+                        variant = LightTextVariant.Detail,
+                        modifier = Modifier.padding(bottom = 0.25f.gridUnitsAsDp()),
+                    )
+                    WeightSpinnerRow(
+                        weightValue = goalWeightValue,
+                        unitLabel = weightUnit.label,
+                        onShiftWhole = viewModel::shiftGoalWeightWhole,
+                        onShiftTenth = viewModel::shiftGoalWeightTenth,
+                        centered = false,
+                        modifier = Modifier.padding(bottom = 1.5f.gridUnitsAsDp()),
+                    )
 
                     ToggleSelectorRow(
                         optionOff = TimeFormat.HOUR_12,

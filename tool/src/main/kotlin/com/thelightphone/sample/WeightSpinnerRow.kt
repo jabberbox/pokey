@@ -12,7 +12,14 @@ import com.thelightphone.sdk.ui.LightTextVariant
 import com.thelightphone.sdk.ui.gridUnitsAsDp
 import kotlin.math.roundToInt
 
-/** Independent whole/tenths spinners, each stepping by one, in whatever unit [unitLabel] names. */
+/**
+ * Odometer-style tens/ones/tenths spinners, in whatever unit [unitLabel]
+ * names. The tens column steps by ten so a big jump (e.g. dialing in from a
+ * default of 150 up to 300) doesn't take dozens of individual taps; both it
+ * and the ones column drive the same [onShiftWhole] callback, just with a
+ * different step size, so the two stay in sync automatically (going from 149
+ * to 150 rolls the tens column over with no extra bookkeeping).
+ */
 @Composable
 fun WeightSpinnerRow(
     weightValue: Double,
@@ -23,6 +30,8 @@ fun WeightSpinnerRow(
     centered: Boolean = true,
 ) {
     val whole = weightValue.toInt()
+    val tens = whole / 10
+    val ones = whole % 10
     val tenths = ((weightValue - whole) * 10).roundToInt()
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -30,7 +39,12 @@ fun WeightSpinnerRow(
         modifier = modifier.fillMaxWidth(),
     ) {
         SpinnerSegment(
-            value = whole.toString(),
+            value = tens.toString(),
+            onIncrement = { onShiftWhole(10) },
+            onDecrement = { onShiftWhole(-10) },
+        )
+        SpinnerSegment(
+            value = ones.toString(),
             onIncrement = { onShiftWhole(1) },
             onDecrement = { onShiftWhole(-1) },
         )
