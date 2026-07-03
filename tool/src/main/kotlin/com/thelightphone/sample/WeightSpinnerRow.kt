@@ -20,12 +20,13 @@ fun WeightSpinnerRow(
     onShiftWhole: (Int) -> Unit,
     onShiftTenth: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    centered: Boolean = true,
 ) {
     val whole = weightValue.toInt()
     val tenths = ((weightValue - whole) * 10).roundToInt()
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = if (centered) Arrangement.Center else Arrangement.Start,
         modifier = modifier.fillMaxWidth(),
     ) {
         SpinnerSegment(

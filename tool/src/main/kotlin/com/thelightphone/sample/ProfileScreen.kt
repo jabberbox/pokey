@@ -26,13 +26,16 @@ import com.thelightphone.sdk.ui.LightTopBarCenter
 import com.thelightphone.sdk.ui.gridUnitsAsDp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlin.math.round
+
+private const val DEFAULT_WEIGHT_LBS = 150.0
 
 class ProfileViewModel(
     private val lightContext: SealedLightContext,
 ) : LightViewModel<Unit>() {
 
-    val beginningWeightText = MutableStateFlow("")
-    val goalWeightText = MutableStateFlow("")
+    val beginningWeightValue = MutableStateFlow(DEFAULT_WEIGHT_LBS)
+    val goalWeightValue = MutableStateFlow(DEFAULT_WEIGHT_LBS)
     val weightUnit = MutableStateFlow(WeightUnit.LBS)
     val timeFormat = MutableStateFlow(TimeFormat.HOUR_12)
 
@@ -41,10 +44,10 @@ class ProfileViewModel(
             profileFlow(lightContext.dataStore).collect { profile ->
                 weightUnit.value = profile.weightUnit
                 timeFormat.value = profile.timeFormat
-                beginningWeightText.value = profile.beginningWeightLbs
-                    ?.let { "%.1f".format(it.lbsToDisplay(profile.weightUnit)) } ?: ""
-                goalWeightText.value = profile.goalWeightLbs
-                    ?.let { "%.1f".format(it.lbsToDisplay(profile.weightUnit)) } ?: ""
+                beginningWeightValue.value = (profile.beginningWeightLbs ?: DEFAULT_WEIGHT_LBS)
+                    .lbsToDisplay(profile.weightUnit)
+                goalWeightValue.value = (profile.goalWeightLbs ?: DEFAULT_WEIGHT_LBS)
+                    .lbsToDisplay(profile.weightUnit)
             }
         }
     }
@@ -57,15 +60,27 @@ class ProfileViewModel(
         viewModelScope.launch { setTimeFormat(lightContext.dataStore, format) }
     }
 
-    fun setBeginningWeightText(value: String) {
-        val enteredLbs = value.toDoubleOrNull()?.displayToLbs(weightUnit.value)
-        viewModelScope.launch { setBeginningWeight(lightContext.dataStore, enteredLbs) }
+    fun shiftBeginningWeightWhole(amount: Int) = shiftBeginningWeight(amount.toDouble())
+
+    fun shiftBeginningWeightTenth(tenths: Int) = shiftBeginningWeight(tenths / 10.0)
+
+    private fun shiftBeginningWeight(amount: Double) {
+        val newValue = roundToOneDecimal((beginningWeightValue.value + amount).coerceAtLeast(0.0))
+        beginningWeightValue.value = newValue
+        viewModelScope.launch { setBeginningWeight(lightContext.dataStore, newValue.displayToLbs(weightUnit.value)) }
     }
 
-    fun setGoalWeightText(value: String) {
-        val enteredLbs = value.toDoubleOrNull()?.displayToLbs(weightUnit.value)
-        viewModelScope.launch { setGoalWeight(lightContext.dataStore, enteredLbs) }
+    fun shiftGoalWeightWhole(amount: Int) = shiftGoalWeight(amount.toDouble())
+
+    fun shiftGoalWeightTenth(tenths: Int) = shiftGoalWeight(tenths / 10.0)
+
+    private fun shiftGoalWeight(amount: Double) {
+        val newValue = roundToOneDecimal((goalWeightValue.value + amount).coerceAtLeast(0.0))
+        goalWeightValue.value = newValue
+        viewModelScope.launch { setGoalWeight(lightContext.dataStore, newValue.displayToLbs(weightUnit.value)) }
     }
+
+    private fun roundToOneDecimal(value: Double) = round(value * 10) / 10.0
 }
 
 class ProfileScreen(
@@ -79,8 +94,8 @@ class ProfileScreen(
 
     @Composable
     override fun Content() {
-        val beginningWeightText by viewModel.beginningWeightText.collectAsState()
-        val goalWeightText by viewModel.goalWeightText.collectAsState()
+        val beginningWeightValue by viewModel.beginningWeightValue.collectAsState()
+        val goalWeightValue by viewModel.goalWeightValue.collectAsState()
         val weightUnit by viewModel.weightUnit.collectAsState()
         val timeFormat by viewModel.timeFormat.collectAsState()
         val themeColors by LightThemeController.colors.collectAsState()
@@ -113,39 +128,31 @@ class ProfileScreen(
                         title = "Units",
                     )
 
-                    NarrowNumericField(
-                        label = "Beginning weight (${weightUnit.label})",
-                        value = beginningWeightText,
-                        placeholder = "e.g. 210.0",
-                        onClick = {
-                            navigateTo(
-                                screenFactory = {
-                                    NumericTextInputEditorScreen(
-                                        it,
-                                        EditorRequest(title = "Beginning weight (${weightUnit.label})", initialValue = beginningWeightText),
-                                    )
-                                },
-                                resultCallback = { viewModel.setBeginningWeightText(it) },
-                            )
-                        },
+                    LightText(
+                        text = "Beginning weight",
+                        variant = LightTextVariant.Detail,
+                        modifier = Modifier.padding(bottom = 0.25f.gridUnitsAsDp()),
+                    )
+                    WeightSpinnerRow(
+                        weightValue = beginningWeightValue,
+                        unitLabel = weightUnit.label,
+                        onShiftWhole = viewModel::shiftBeginningWeightWhole,
+                        onShiftTenth = viewModel::shiftBeginningWeightTenth,
+                        centered = false,
                         modifier = Modifier.padding(bottom = 1.5f.gridUnitsAsDp()),
                     )
 
-                    NarrowNumericField(
-                        label = "Goal weight (${weightUnit.label})",
-                        value = goalWeightText,
-                        placeholder = "e.g. 170.0",
-                        onClick = {
-                            navigateTo(
-                                screenFactory = {
-                                    NumericTextInputEditorScreen(
-                                        it,
-                                        EditorRequest(title = "Goal weight (${weightUnit.label})", initialValue = goalWeightText),
-                                    )
-                                },
-                                resultCallback = { viewModel.setGoalWeightText(it) },
-                            )
-                        },
+                    LightText(
+                        text = "Goal weight",
+                        variant = LightTextVariant.Detail,
+                        modifier = Modifier.padding(bottom = 0.25f.gridUnitsAsDp()),
+                    )
+                    WeightSpinnerRow(
+                        weightValue = goalWeightValue,
+                        unitLabel = weightUnit.label,
+                        onShiftWhole = viewModel::shiftGoalWeightWhole,
+                        onShiftTenth = viewModel::shiftGoalWeightTenth,
+                        centered = false,
                         modifier = Modifier.padding(bottom = 1.5f.gridUnitsAsDp()),
                     )
 
