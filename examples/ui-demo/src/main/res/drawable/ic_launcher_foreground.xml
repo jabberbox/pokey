@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- "P" stem -->
+    <path
+        android:pathData="M42,32 H54 V76 H42 Z"
+        android:fillColor="#FFFFFFFF" />
+    <!-- "P" bowl outline -->
+    <path
+        android:pathData="M42,32 H60 A13,13 0 0 1 60,58 H42 Z"
+        android:fillColor="#FFFFFFFF" />
+    <!-- "P" bowl counter (punches the hole to match the background) -->
+    <path
+        android:pathData="M54,38 H60 A7,7 0 0 1 60,52 H54 Z"
+        android:fillColor="#FF000000" />
+</vector>
