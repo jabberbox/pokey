@@ -1,0 +1,74 @@
+package com.thelightphone.sample
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import com.thelightphone.sdk.ui.LightSurfaceScheme
+import com.thelightphone.sdk.ui.LightThemeTokens
+import com.thelightphone.sdk.ui.gridUnitsAsDp
+
+private const val BOTTOMBAR_HEIGHT_UNITS = 4f
+private const val ICON_SIZE_UNITS = 2f
+private const val HORIZONTAL_PADDING_UNITS = 2f
+private const val TOP_MARGIN_UNITS = 1f
+
+/**
+ * Persistent tab bar shown on every screen. Unlike [com.thelightphone.sdk.ui.LightBottomBar] +
+ * [com.thelightphone.sdk.ui.LightIcon], this renders icons with an explicit per-tab tint
+ * (white for the active tab, secondary/grey otherwise) since the SDK's icon APIs always
+ * tint from the theme uniformly and don't expose a per-call override.
+ */
+@Composable
+fun BottomNavBar(
+    current: AppTab,
+    onNavigate: (AppTab) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = TOP_MARGIN_UNITS.gridUnitsAsDp())
+            .height(BOTTOMBAR_HEIGHT_UNITS.gridUnitsAsDp())
+            .padding(horizontal = HORIZONTAL_PADDING_UNITS.gridUnitsAsDp()),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AppTab.entries.forEach { tab ->
+            val selected = tab == current
+            val tint = if (selected) LightThemeTokens.colors.content else LightThemeTokens.colors.contentSecondary
+
+            Box(
+                modifier = Modifier
+                    .height(BOTTOMBAR_HEIGHT_UNITS.gridUnitsAsDp())
+                    .clickable(enabled = !selected) { onNavigate(tab) },
+                contentAlignment = Alignment.Center,
+            ) {
+                val icon = tab.icon
+                if (icon == null) {
+                    HouseIcon(tint = tint)
+                } else {
+                    val drawableId = when (LightThemeTokens.surfaceScheme) {
+                        LightSurfaceScheme.Dark -> icon.darkModeResource
+                        LightSurfaceScheme.Light -> icon.lightModeResource
+                    }
+                    Icon(
+                        painter = painterResource(drawableId),
+                        contentDescription = icon.name,
+                        tint = tint,
+                        modifier = Modifier.size(ICON_SIZE_UNITS.gridUnitsAsDp()),
+                    )
+                }
+            }
+        }
+    }
+}
