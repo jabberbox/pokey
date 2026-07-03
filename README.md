@@ -20,6 +20,16 @@ no ads — everything lives on-device.
 - **lbs/kg and 12hr/24hr toggles** — pick your preferred units and time format once
   in Profile; every screen respects it.
 
+## Screenshots
+
+| Home | Log | Log Shot |
+|---|---|---|
+| ![Home](screenshots/home.png) | ![Log](screenshots/log-menu.png) | ![Log Shot](screenshots/log-shot.png) |
+
+| Log Weight | History | Profile |
+|---|---|---|
+| ![Log Weight](screenshots/log-weight.png) | ![History](screenshots/history.png) | ![Profile](screenshots/profile.png) |
+
 ## Installing
 
 Grab the latest APK from the [Releases](../../releases) page and sideload it onto
