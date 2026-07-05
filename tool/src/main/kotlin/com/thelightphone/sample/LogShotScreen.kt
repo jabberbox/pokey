@@ -253,6 +253,7 @@ class LogShotScreen(
                                     LightText(
                                         text = site.label,
                                         variant = LightTextVariant.Copy,
+                                        lighten = selectedSite != site,
                                     )
                                 }
                             }
