@@ -16,8 +16,9 @@ import com.thelightphone.sdk.ui.lightClickable
 
 /**
  * A tappable label/value pair, matching the settings row used in the weather
- * example tool. [showEditIcon] adds the same pencil icon History uses on its
- * rows, since a bare label/value pair alone doesn't read as tappable.
+ * example tool. [showEditIcon] adds the same pencil icon History uses, sat
+ * right next to the value itself (not centered against the whole row), since
+ * a bare label/value pair alone doesn't read as tappable.
  */
 @Composable
 fun SelectSettingRow(
@@ -27,30 +28,29 @@ fun SelectSettingRow(
     modifier: Modifier = Modifier,
     showEditIcon: Boolean = false,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .lightClickable(onClick = onClick)
             .padding(vertical = 0.75f.gridUnitsAsDp()),
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            LightText(
-                text = label,
-                variant = LightTextVariant.Detail,
-                lighten = true,
-            )
+        LightText(
+            text = label,
+            variant = LightTextVariant.Detail,
+            lighten = true,
+        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
             LightText(
                 text = value,
                 variant = LightTextVariant.Heading,
             )
-        }
-        if (showEditIcon) {
-            LightIcon(
-                icon = LightIcons.PENCIL,
-                size = 1.5f,
-                modifier = Modifier.padding(start = 0.5f.gridUnitsAsDp()),
-            )
+            if (showEditIcon) {
+                LightIcon(
+                    icon = LightIcons.PENCIL,
+                    size = 1.5f,
+                    modifier = Modifier.padding(start = 0.5f.gridUnitsAsDp()),
+                )
+            }
         }
     }
 }
