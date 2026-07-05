@@ -182,12 +182,15 @@ class ProfileScreen(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
-                            .padding(horizontal = 1f.gridUnitsAsDp()),
+                            .padding(horizontal = 1f.gridUnitsAsDp())
+                            // ToggleSelectorRow (the left column's first row) has its
+                            // own 0.75-unit top padding baked in; match it here so
+                            // "Injection Sites" lines up with "Units".
+                            .padding(top = 0.75f.gridUnitsAsDp()),
                     ) {
                         LightText(
                             text = "Injection Sites",
                             variant = LightTextVariant.Detail,
-                            lighten = true,
                             modifier = Modifier.padding(bottom = 0.5f.gridUnitsAsDp()),
                         )
                         BodyPart.entries.forEach { part ->
