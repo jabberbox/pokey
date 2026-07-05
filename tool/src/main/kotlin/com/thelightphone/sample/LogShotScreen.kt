@@ -45,11 +45,10 @@ enum class LogShotField(val label: String) {
     SITE("Site"),
 }
 
-private fun suggestedNextSite(lastSite: InjectionSite?): InjectionSite {
-    val entries = InjectionSite.entries
-    if (lastSite == null) return entries.first()
-    val nextIndex = (entries.indexOf(lastSite) + 1) % entries.size
-    return entries[nextIndex]
+private fun suggestedNextSite(lastSite: InjectionSite?, enabledSites: List<InjectionSite>): InjectionSite {
+    if (lastSite == null || lastSite !in enabledSites) return enabledSites.first()
+    val nextIndex = (enabledSites.indexOf(lastSite) + 1) % enabledSites.size
+    return enabledSites[nextIndex]
 }
 
 class LogShotViewModel(
@@ -65,10 +64,13 @@ class LogShotViewModel(
     val selectedField = MutableStateFlow(LogShotField.DATE)
     val deleteArmed = MutableStateFlow(false)
     val timeFormat = MutableStateFlow(TimeFormat.HOUR_12)
+    val enabledBodyParts = MutableStateFlow(BodyPart.entries.toSet())
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            timeFormat.value = timeFormatFlow(lightContext.dataStore).first()
+            val profile = profileFlow(lightContext.dataStore).first()
+            timeFormat.value = profile.timeFormat
+            enabledBodyParts.value = profile.enabledBodyParts
             if (editingShotId != null) {
                 repository.getShotById(editingShotId)?.let { shot ->
                     selectedDate.value = shot.timestampMillis.toLocalDate()
@@ -76,7 +78,8 @@ class LogShotViewModel(
                     selectedSite.value = shot.site
                 }
             } else {
-                selectedSite.value = suggestedNextSite(repository.getLatestShot()?.site)
+                val enabledSites = InjectionSite.entries.filter { it.bodyPart in profile.enabledBodyParts }
+                selectedSite.value = suggestedNextSite(repository.getLatestShot()?.site, enabledSites)
             }
         }
     }
@@ -179,6 +182,7 @@ class LogShotScreen(
         val selectedField by viewModel.selectedField.collectAsState()
         val deleteArmed by viewModel.deleteArmed.collectAsState()
         val timeFormat by viewModel.timeFormat.collectAsState()
+        val enabledBodyParts by viewModel.enabledBodyParts.collectAsState()
         val themeColors by LightThemeController.colors.collectAsState()
 
         LightTheme(colors = themeColors) {
@@ -238,7 +242,7 @@ class LogShotScreen(
                         )
 
                         LogShotField.SITE -> Column {
-                            InjectionSite.entries.forEach { site ->
+                            InjectionSite.entries.filter { it.bodyPart in enabledBodyParts }.forEach { site ->
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier

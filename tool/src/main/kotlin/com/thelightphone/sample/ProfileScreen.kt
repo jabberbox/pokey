@@ -1,13 +1,17 @@
 package com.thelightphone.sample
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewModelScope
 import io.github.jabberbox.pokey.BuildConfig
@@ -39,12 +43,14 @@ class ProfileViewModel(
     val goalWeightValue = MutableStateFlow(DEFAULT_WEIGHT_LBS)
     val weightUnit = MutableStateFlow(WeightUnit.LBS)
     val timeFormat = MutableStateFlow(TimeFormat.HOUR_12)
+    val enabledBodyParts = MutableStateFlow(BodyPart.entries.toSet())
 
     init {
         viewModelScope.launch {
             profileFlow(lightContext.dataStore).collect { profile ->
                 weightUnit.value = profile.weightUnit
                 timeFormat.value = profile.timeFormat
+                enabledBodyParts.value = profile.enabledBodyParts
                 beginningWeightValue.value = (profile.beginningWeightLbs ?: DEFAULT_WEIGHT_LBS)
                     .lbsToDisplay(profile.weightUnit)
                 goalWeightValue.value = (profile.goalWeightLbs ?: DEFAULT_WEIGHT_LBS)
@@ -78,6 +84,13 @@ class ProfileViewModel(
     fun selectTimeFormat(format: TimeFormat) {
         viewModelScope.launch { withContext(NonCancellable) { setTimeFormat(lightContext.dataStore, format) } }
     }
+
+    fun toggleBodyPart(bodyPart: BodyPart) {
+        val enabled = bodyPart !in enabledBodyParts.value
+        viewModelScope.launch {
+            withContext(NonCancellable) { setBodyPartEnabled(lightContext.dataStore, bodyPart, enabled) }
+        }
+    }
 }
 
 class ProfileScreen(
@@ -95,6 +108,7 @@ class ProfileScreen(
         val goalWeightValue by viewModel.goalWeightValue.collectAsState()
         val weightUnit by viewModel.weightUnit.collectAsState()
         val timeFormat by viewModel.timeFormat.collectAsState()
+        val enabledBodyParts by viewModel.enabledBodyParts.collectAsState()
         val themeColors by LightThemeController.colors.collectAsState()
 
         LightTheme(colors = themeColors) {
@@ -108,55 +122,95 @@ class ProfileScreen(
                     modifier = Modifier.padding(bottom = 1f.gridUnitsAsDp()),
                 )
 
-                LightScrollView(
+                Row(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxWidth()
-                        .padding(horizontal = 1f.gridUnitsAsDp()),
+                        .fillMaxWidth(),
                 ) {
-                    ToggleSelectorRow(
-                        optionOff = WeightUnit.LBS,
-                        optionOn = WeightUnit.KG,
-                        selected = weightUnit,
-                        labelOff = WeightUnit.LBS.label,
-                        labelOn = WeightUnit.KG.label,
-                        onSelect = viewModel::selectWeightUnit,
-                        title = "Units",
-                    )
-                    SelectSettingRow(
-                        label = "Beginning weight",
-                        value = "%.1f %s".format(beginningWeightValue, weightUnit.label),
-                        onClick = {
-                            navigateTo(screenFactory = { ProfileWeightEditScreen(it, ProfileWeightField.BEGINNING) })
-                        },
-                        showEditIcon = true,
-                    )
-                    SelectSettingRow(
-                        label = "Goal weight",
-                        value = "%.1f %s".format(goalWeightValue, weightUnit.label),
-                        onClick = {
-                            navigateTo(screenFactory = { ProfileWeightEditScreen(it, ProfileWeightField.GOAL) })
-                        },
-                        showEditIcon = true,
-                    )
-                    ToggleSelectorRow(
-                        optionOff = TimeFormat.HOUR_12,
-                        optionOn = TimeFormat.HOUR_24,
-                        selected = timeFormat,
-                        labelOff = TimeFormat.HOUR_12.label,
-                        labelOn = TimeFormat.HOUR_24.label,
-                        onSelect = viewModel::selectTimeFormat,
-                        title = "Time Format",
-                    )
-
-                    LightText(
-                        text = "Pokey (Build ${BuildConfig.VERSION_NAME})",
-                        variant = LightTextVariant.Detail,
-                        lighten = true,
+                    LightScrollView(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 1f.gridUnitsAsDp()),
-                    )
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .padding(horizontal = 1f.gridUnitsAsDp()),
+                    ) {
+                        ToggleSelectorRow(
+                            optionOff = WeightUnit.LBS,
+                            optionOn = WeightUnit.KG,
+                            selected = weightUnit,
+                            labelOff = WeightUnit.LBS.label,
+                            labelOn = WeightUnit.KG.label,
+                            onSelect = viewModel::selectWeightUnit,
+                            title = "Units",
+                        )
+                        SelectSettingRow(
+                            label = "Beginning weight",
+                            value = "%.1f %s".format(beginningWeightValue, weightUnit.label),
+                            onClick = {
+                                navigateTo(screenFactory = { ProfileWeightEditScreen(it, ProfileWeightField.BEGINNING) })
+                            },
+                            showEditIcon = true,
+                        )
+                        SelectSettingRow(
+                            label = "Goal weight",
+                            value = "%.1f %s".format(goalWeightValue, weightUnit.label),
+                            onClick = {
+                                navigateTo(screenFactory = { ProfileWeightEditScreen(it, ProfileWeightField.GOAL) })
+                            },
+                            showEditIcon = true,
+                        )
+                        ToggleSelectorRow(
+                            optionOff = TimeFormat.HOUR_12,
+                            optionOn = TimeFormat.HOUR_24,
+                            selected = timeFormat,
+                            labelOff = TimeFormat.HOUR_12.label,
+                            labelOn = TimeFormat.HOUR_24.label,
+                            onSelect = viewModel::selectTimeFormat,
+                            title = "Time Format",
+                        )
+
+                        LightText(
+                            text = "Pokey (Build ${BuildConfig.VERSION_NAME})",
+                            variant = LightTextVariant.Detail,
+                            lighten = true,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 1f.gridUnitsAsDp()),
+                        )
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .padding(horizontal = 1f.gridUnitsAsDp()),
+                    ) {
+                        LightText(
+                            text = "Injection Sites",
+                            variant = LightTextVariant.Detail,
+                            lighten = true,
+                            modifier = Modifier.padding(bottom = 0.5f.gridUnitsAsDp()),
+                        )
+                        BodyPart.entries.forEach { part ->
+                            val enabled = part in enabledBodyParts
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { viewModel.toggleBodyPart(part) }
+                                    .padding(vertical = 0.45f.gridUnitsAsDp()),
+                            ) {
+                                RadioIndicator(
+                                    selected = enabled,
+                                    modifier = Modifier.padding(end = 1f.gridUnitsAsDp()),
+                                )
+                                LightText(
+                                    text = part.label,
+                                    variant = LightTextVariant.Copy,
+                                    lighten = !enabled,
+                                )
+                            }
+                        }
+                    }
                 }
 
                 BottomNavBar(current = AppTab.PROFILE, onNavigate = { navigateToTab(it) })

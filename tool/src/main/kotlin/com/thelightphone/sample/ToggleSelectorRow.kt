@@ -53,25 +53,33 @@ fun <T> ToggleSelectorRow(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
         ) {
+            // In a plain Row, each child's max width is whatever's left after
+            // earlier siblings, so in a narrow column (e.g. Profile's split
+            // layout) the last label could get squeezed to a couple of
+            // characters per line. maxLines=1 turns that into a harmless clip
+            // instead of the text stacking vertically one glyph at a time.
             LightText(
                 text = labelOff,
-                variant = LightTextVariant.Subheading,
+                variant = LightTextVariant.Fine,
                 lighten = isOn,
+                maxLines = 1,
                 modifier = Modifier
                     .clickable { onSelect(optionOff) }
-                    .padding(end = 1f.gridUnitsAsDp()),
+                    .padding(end = 0.5f.gridUnitsAsDp()),
             )
             LightIcon(
                 icon = if (isOn) LightIcons.TOGGLE_OFF else LightIcons.TOGGLE_ON,
+                size = 1.5f,
                 modifier = Modifier.clickable { onSelect(if (isOn) optionOff else optionOn) },
             )
             LightText(
                 text = labelOn,
-                variant = LightTextVariant.Subheading,
+                variant = LightTextVariant.Fine,
                 lighten = !isOn,
+                maxLines = 1,
                 modifier = Modifier
                     .clickable { onSelect(optionOn) }
-                    .padding(start = 1f.gridUnitsAsDp()),
+                    .padding(start = 0.5f.gridUnitsAsDp()),
             )
         }
     }
