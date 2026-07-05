@@ -191,18 +191,22 @@ class HomeScreen(sealedActivity: SealedLightActivity) : LightScreen<Unit, HomeSc
                         val days = absMinutes / (24 * 60)
                         val hours = (absMinutes % (24 * 60)) / 60
 
-                        LightText(
-                            text = when {
-                                absMinutes == 0L -> "Next shot due now"
-                                isOverdue -> "Next shot overdue by ${formatDaysHours(days, hours)}"
-                                else -> "Next shot in ${formatDaysHours(days, hours)}"
+                        val totalCycleMinutes = 7 * 24 * 60
+                        val elapsedMinutes = (totalCycleMinutes - minutesUntil).coerceIn(0, totalCycleMinutes.toLong())
+                        val progress = elapsedMinutes.toFloat() / totalCycleMinutes
+
+                        NextDoseArc(
+                            progress = progress,
+                            primaryText = when {
+                                absMinutes == 0L -> "Due now"
+                                isOverdue -> "Overdue"
+                                else -> formatDaysHours(days, hours)
                             },
-                            variant = LightTextVariant.Subheading,
-                            modifier = Modifier.padding(bottom = 0.75f.gridUnitsAsDp()),
-                        )
-                        LightText(
-                            text = "Last shot: ${timeFormat.dateTimeFormatter().format(lastShotDateTime)}",
-                            variant = LightTextVariant.Copy,
+                            secondaryText = when {
+                                isOverdue && absMinutes != 0L -> "by ${formatDaysHours(days, hours)}"
+                                else -> "to next shot"
+                            },
+                            tertiaryText = timeFormat.nextDoseFormatter().format(nextShotDateTime),
                             modifier = Modifier.padding(bottom = 1.5f.gridUnitsAsDp()),
                         )
                     }

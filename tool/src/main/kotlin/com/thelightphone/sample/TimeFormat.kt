@@ -12,3 +12,7 @@ internal fun TimeFormat.timeFormatter(): DateTimeFormatter =
 
 internal fun TimeFormat.dateTimeFormatter(): DateTimeFormatter =
     DateTimeFormatter.ofPattern(if (this == TimeFormat.HOUR_24) "MMM d, yyyy HH:mm" else "MMM d, yyyy h:mm a")
+
+/** e.g. "Sat, Jul 11 at 6:40 PM" -- for the next-dose arc, where the year is redundant. */
+internal fun TimeFormat.nextDoseFormatter(): DateTimeFormatter =
+    DateTimeFormatter.ofPattern(if (this == TimeFormat.HOUR_24) "EEE, MMM d 'at' HH:mm" else "EEE, MMM d 'at' h:mm a")
