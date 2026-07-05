@@ -48,7 +48,7 @@ fun <T> FieldSelectorRow(
                     LightText(
                         text = value(field),
                         variant = LightTextVariant.Fine,
-                        lighten = true,
+                        lighten = field != selected,
                         align = TextAlign.Center,
                         modifier = Modifier.padding(top = 0.25f.gridUnitsAsDp()),
                     )
