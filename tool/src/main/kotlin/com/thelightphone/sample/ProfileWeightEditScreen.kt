@@ -117,8 +117,6 @@ class ProfileWeightEditScreen(
                     onShiftTenth = viewModel::shiftTenth,
                     modifier = Modifier.padding(top = 2f.gridUnitsAsDp()),
                 )
-
-                BottomNavBar(current = AppTab.PROFILE, onNavigate = { navigateToTab(it) })
             }
         }
     }
