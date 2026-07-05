@@ -56,17 +56,9 @@ internal fun Long.toZonedDateTime(): ZonedDateTime =
 
 internal fun Long.toLocalTime(): LocalTime = toZonedDateTime().toLocalTime()
 
-/** e.g. (2, 3) -> "2 days, 3 hours"; (0, 3) -> "3 hours"; (2, 0) -> "2 days" */
-internal fun formatDaysHours(days: Long, hours: Long): String {
-    val dayPart = if (days > 0) "$days day${if (days == 1L) "" else "s"}" else null
-    val hourPart = if (hours > 0) "$hours hour${if (hours == 1L) "" else "s"}" else null
-    return when {
-        dayPart != null && hourPart != null -> "$dayPart, $hourPart"
-        dayPart != null -> dayPart
-        hourPart != null -> hourPart
-        else -> "less than an hour"
-    }
-}
+/** e.g. 2 -> "2 days"; 1 -> "1 day"; 0 -> "Less than a day" */
+internal fun formatDays(days: Long): String =
+    if (days > 0) "$days day${if (days == 1L) "" else "s"}" else "Less than a day"
 
 class HomeScreenViewModel(
     private val shotRepository: ShotRepository,
@@ -194,7 +186,6 @@ class HomeScreen(sealedActivity: SealedLightActivity) : LightScreen<Unit, HomeSc
                         val isOverdue = minutesUntil < 0
                         val absMinutes = abs(minutesUntil)
                         val days = absMinutes / (24 * 60)
-                        val hours = (absMinutes % (24 * 60)) / 60
 
                         val totalCycleMinutes = 7 * 24 * 60
                         val elapsedMinutes = (totalCycleMinutes - minutesUntil).coerceIn(0, totalCycleMinutes.toLong())
@@ -205,10 +196,10 @@ class HomeScreen(sealedActivity: SealedLightActivity) : LightScreen<Unit, HomeSc
                             primaryText = when {
                                 absMinutes == 0L -> "Due now"
                                 isOverdue -> "Overdue"
-                                else -> formatDaysHours(days, hours)
+                                else -> formatDays(days)
                             },
                             secondaryText = when {
-                                isOverdue && absMinutes != 0L -> "by ${formatDaysHours(days, hours)}"
+                                isOverdue && absMinutes != 0L -> "by ${formatDays(days)}"
                                 else -> "to next shot"
                             },
                             tertiaryText = timeFormat.nextDoseFormatter().format(nextShotDateTime),
