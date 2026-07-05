@@ -121,7 +121,6 @@ class ProfileScreen(
                         labelOff = WeightUnit.LBS.label,
                         labelOn = WeightUnit.KG.label,
                         onSelect = viewModel::selectWeightUnit,
-                        modifier = Modifier.padding(bottom = 1.5f.gridUnitsAsDp()),
                         title = "Units",
                     )
                     SelectSettingRow(
@@ -147,7 +146,6 @@ class ProfileScreen(
                         labelOff = TimeFormat.HOUR_12.label,
                         labelOn = TimeFormat.HOUR_24.label,
                         onSelect = viewModel::selectTimeFormat,
-                        modifier = Modifier.padding(top = 0.5f.gridUnitsAsDp(), bottom = 1.5f.gridUnitsAsDp()),
                         title = "Time Format",
                     )
 

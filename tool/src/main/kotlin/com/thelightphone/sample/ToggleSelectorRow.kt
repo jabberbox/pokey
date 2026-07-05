@@ -38,7 +38,11 @@ fun <T> ToggleSelectorRow(
     title: String? = null,
 ) {
     val isOn = selected == optionOn
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 0.75f.gridUnitsAsDp()),
+    ) {
         if (title != null) {
             LightText(
                 text = title,
