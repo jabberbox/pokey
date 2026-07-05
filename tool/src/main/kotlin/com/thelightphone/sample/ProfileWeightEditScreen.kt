@@ -25,7 +25,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.math.round
 
 private const val DEFAULT_WEIGHT_LBS = 150.0
@@ -60,21 +59,18 @@ class ProfileWeightEditViewModel(
     fun shiftTenth(tenths: Int) = shift(tenths / 10.0)
 
     private fun shift(amount: Double) {
-        weightValue.value = roundToOneDecimal((weightValue.value + amount).coerceAtLeast(0.0))
-    }
-
-    private fun roundToOneDecimal(value: Double) = round(value * 10) / 10.0
-
-    fun save(onSaved: () -> Unit) {
-        val weightLbs = weightValue.value.displayToLbs(weightUnit.value)
+        val newValue = roundToOneDecimal((weightValue.value + amount).coerceAtLeast(0.0))
+        weightValue.value = newValue
+        val weightLbs = newValue.displayToLbs(weightUnit.value)
         viewModelScope.launch(Dispatchers.IO) {
             when (field) {
                 ProfileWeightField.BEGINNING -> setBeginningWeight(lightContext.dataStore, weightLbs)
                 ProfileWeightField.GOAL -> setGoalWeight(lightContext.dataStore, weightLbs)
             }
-            withContext(Dispatchers.Main) { onSaved() }
         }
     }
+
+    private fun roundToOneDecimal(value: Double) = round(value * 10) / 10.0
 }
 
 class ProfileWeightEditScreen(
@@ -102,11 +98,6 @@ class ProfileWeightEditScreen(
                 LightTopBar(
                     leftButton = LightBarButton.LightIcon(icon = LightIcons.BACK, onClick = { goBack() }),
                     center = LightTopBarCenter.Text(field.title),
-                    rightButton = LightBarButton.Icon(
-                        painter = rememberSaveIconPainter(),
-                        contentDescription = "Save",
-                        onClick = { viewModel.save(onSaved = { goBack() }) },
-                    ),
                     modifier = Modifier.padding(bottom = 1f.gridUnitsAsDp()),
                 )
 
