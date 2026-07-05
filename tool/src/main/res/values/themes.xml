@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Overrides the SDK's default splash theme (sdk/client/.../themes.xml).
+        Android's SplashScreen API falls back to android:icon as the splash
+        icon whenever windowSplashScreenAnimatedIcon isn't set, so once we
+        added a real launcher icon the "P" started showing on cold start.
+        Pointing the splash icon at a transparent color keeps the launcher
+        icon (for Obtainium/the app drawer) while leaving the splash itself
+        plain black.
+    -->
+    <style name="LightSdk.Theme.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@android:color/black</item>
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+        <item name="postSplashScreenTheme">@style/LightSdk.Theme</item>
+    </style>
+</resources>
