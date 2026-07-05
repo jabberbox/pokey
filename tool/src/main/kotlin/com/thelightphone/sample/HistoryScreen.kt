@@ -122,7 +122,7 @@ class HistoryScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 1f.gridUnitsAsDp()),
                     ) {
-                        items.forEachIndexed { index, item ->
+                        items.forEach { item ->
                             val date = timeFormat.dateTimeFormatter().format(item.timestampMillis.toZonedDateTime())
                             val label = when (item) {
                                 is HistoryItem.ShotItem -> "Shot: ${item.site.label}"
@@ -168,9 +168,6 @@ class HistoryScreen(
                                     size = 1.5f,
                                     modifier = Modifier.padding(start = 0.5f.gridUnitsAsDp()),
                                 )
-                            }
-                            if (index != items.lastIndex) {
-                                Divider()
                             }
                         }
                     }

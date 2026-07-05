@@ -103,7 +103,7 @@ class ProfileWeightEditScreen(
                     leftButton = LightBarButton.LightIcon(icon = LightIcons.BACK, onClick = { goBack() }),
                     center = LightTopBarCenter.Text(field.title),
                     rightButton = LightBarButton.Icon(
-                        painter = rememberCheckmarkPainter(),
+                        painter = rememberSaveIconPainter(),
                         contentDescription = "Save",
                         onClick = { viewModel.save(onSaved = { goBack() }) },
                     ),

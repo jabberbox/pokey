@@ -24,11 +24,15 @@ private const val HORIZONTAL_PADDING_UNITS = 2f
 private const val TOP_MARGIN_UNITS = 1f
 private const val UNSELECTED_ALPHA = 0.5f
 
+/** Google's "home" glyph (https://fonts.google.com/icons) — LightIcons has no house/home icon. */
+private const val HOME_ICON_PATH = "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
+
 /**
  * Persistent tab bar shown on every screen. Unlike [com.thelightphone.sdk.ui.LightBottomBar] +
  * [com.thelightphone.sdk.ui.LightIcon], this renders icons with an explicit per-tab tint
  * (always full color, with the inactive tabs faded via alpha) since the SDK's icon APIs
- * always tint from the theme uniformly and don't expose a per-call override.
+ * always tint from the theme uniformly and don't expose a per-call override. The Home tab
+ * has no LightIcons equivalent, so it falls back to a Google icon (see [GoogleIcon]).
  */
 @Composable
 fun BottomNavBar(
@@ -58,7 +62,7 @@ fun BottomNavBar(
             ) {
                 val icon = tab.icon
                 if (icon == null) {
-                    HouseIcon(tint = tint)
+                    GoogleIcon(pathData = HOME_ICON_PATH, tint = tint, sizeUnits = ICON_SIZE_UNITS)
                 } else {
                     val drawableId = when (LightThemeTokens.surfaceScheme) {
                         LightSurfaceScheme.Dark -> icon.darkModeResource
