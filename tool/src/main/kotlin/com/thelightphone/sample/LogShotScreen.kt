@@ -198,27 +198,29 @@ class LogShotScreen(
                     modifier = Modifier.padding(bottom = 1f.gridUnitsAsDp()),
                 )
 
+                FieldSelectorRow(
+                    fields = LogShotField.entries,
+                    selected = selectedField,
+                    label = { it.label },
+                    value = { field ->
+                        when (field) {
+                            LogShotField.DATE -> DISPLAY_DATE_FORMAT.format(selectedDate)
+                            LogShotField.TIME -> timeFormat.timeFormatter().format(selectedTime)
+                            LogShotField.SITE -> selectedSite?.label ?: "Not selected"
+                        }
+                    },
+                    onSelect = viewModel::selectField,
+                    modifier = Modifier
+                        .padding(horizontal = 1f.gridUnitsAsDp())
+                        .padding(bottom = 1f.gridUnitsAsDp()),
+                )
+
                 LightScrollView(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
                         .padding(horizontal = 1f.gridUnitsAsDp()),
                 ) {
-                    FieldSelectorRow(
-                        fields = LogShotField.entries,
-                        selected = selectedField,
-                        label = { it.label },
-                        value = { field ->
-                            when (field) {
-                                LogShotField.DATE -> DISPLAY_DATE_FORMAT.format(selectedDate)
-                                LogShotField.TIME -> timeFormat.timeFormatter().format(selectedTime)
-                                LogShotField.SITE -> selectedSite?.label ?: "Not selected"
-                            }
-                        },
-                        onSelect = viewModel::selectField,
-                        modifier = Modifier.padding(bottom = 1f.gridUnitsAsDp()),
-                    )
-
                     when (selectedField) {
                         LogShotField.DATE -> DateSpinnerRow(
                             date = selectedDate,

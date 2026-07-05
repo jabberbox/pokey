@@ -194,27 +194,29 @@ class LogWeightScreen(
                     modifier = Modifier.padding(bottom = 1f.gridUnitsAsDp()),
                 )
 
+                FieldSelectorRow(
+                    fields = LogWeightField.entries,
+                    selected = selectedField,
+                    label = { it.label },
+                    value = { field ->
+                        when (field) {
+                            LogWeightField.DATE -> DISPLAY_DATE_FORMAT.format(selectedDate)
+                            LogWeightField.TIME -> timeFormat.timeFormatter().format(selectedTime)
+                            LogWeightField.WEIGHT -> "%.1f ${weightUnit.label}".format(weightValue)
+                        }
+                    },
+                    onSelect = viewModel::selectField,
+                    modifier = Modifier
+                        .padding(horizontal = 1f.gridUnitsAsDp())
+                        .padding(bottom = 1f.gridUnitsAsDp()),
+                )
+
                 LightScrollView(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
                         .padding(horizontal = 1f.gridUnitsAsDp()),
                 ) {
-                    FieldSelectorRow(
-                        fields = LogWeightField.entries,
-                        selected = selectedField,
-                        label = { it.label },
-                        value = { field ->
-                            when (field) {
-                                LogWeightField.DATE -> DISPLAY_DATE_FORMAT.format(selectedDate)
-                                LogWeightField.TIME -> timeFormat.timeFormatter().format(selectedTime)
-                                LogWeightField.WEIGHT -> "%.1f ${weightUnit.label}".format(weightValue)
-                            }
-                        },
-                        onSelect = viewModel::selectField,
-                        modifier = Modifier.padding(bottom = 1f.gridUnitsAsDp()),
-                    )
-
                     when (selectedField) {
                         LogWeightField.DATE -> DateSpinnerRow(
                             date = selectedDate,
