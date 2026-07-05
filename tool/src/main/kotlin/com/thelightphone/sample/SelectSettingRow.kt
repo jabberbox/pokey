@@ -3,7 +3,6 @@ package com.thelightphone.sample
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,7 +13,6 @@ import com.thelightphone.sdk.ui.LightText
 import com.thelightphone.sdk.ui.LightTextVariant
 import com.thelightphone.sdk.ui.gridUnitsAsDp
 import com.thelightphone.sdk.ui.lightClickable
-import com.thelightphone.sdk.ui.verticalGridUnitsAsDp
 
 /**
  * A tappable label/value pair, matching the settings row used in the weather
@@ -43,11 +41,11 @@ fun SelectSettingRow(
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            // Heading's larger line-height carries more built-in top leading
-            // than ToggleSelectorRow's Subheading text, which otherwise makes
-            // this look further from its label even with identical padding.
-            // Nudge it up to match.
-            modifier = Modifier.offset(y = (-0.15f).verticalGridUnitsAsDp()),
+            // Measured against ToggleSelectorRow's title-to-value gap: with no
+            // extra padding this sat far closer (~2px) than the toggle's
+            // (~24px), since Heading's glyphs sit closer to the top of its
+            // line box than Subheading's do. Add explicit space to match.
+            modifier = Modifier.padding(top = 0.55f.gridUnitsAsDp()),
         ) {
             LightText(
                 text = value,
