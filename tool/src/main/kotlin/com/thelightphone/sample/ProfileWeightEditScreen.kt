@@ -51,8 +51,22 @@ class ProfileWeightEditViewModel(
             val storedLbs = when (field) {
                 ProfileWeightField.BEGINNING -> profile.beginningWeightLbs
                 ProfileWeightField.GOAL -> profile.goalWeightLbs
-            } ?: DEFAULT_WEIGHT_LBS
-            weightValue.value = storedLbs.lbsToDisplay(profile.weightUnit)
+            }
+            val resolvedLbs = storedLbs ?: DEFAULT_WEIGHT_LBS
+            weightValue.value = resolvedLbs.lbsToDisplay(profile.weightUnit)
+            if (storedLbs == null) {
+                // Nothing was actually stored yet -- the placeholder is only
+                // ever a display fallback, so if it happens to already match
+                // what the user wants, they'd never touch a spinner and it
+                // would never get saved. Persist it immediately so viewing
+                // this screen always establishes a real value.
+                withContext(NonCancellable) {
+                    when (field) {
+                        ProfileWeightField.BEGINNING -> setBeginningWeight(lightContext.dataStore, resolvedLbs)
+                        ProfileWeightField.GOAL -> setGoalWeight(lightContext.dataStore, resolvedLbs)
+                    }
+                }
+            }
         }
     }
 
