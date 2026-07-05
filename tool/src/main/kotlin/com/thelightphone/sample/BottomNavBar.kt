@@ -12,6 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import com.thelightphone.sdk.ui.LightSurfaceScheme
 import com.thelightphone.sdk.ui.LightThemeTokens
@@ -21,12 +22,13 @@ private const val BOTTOMBAR_HEIGHT_UNITS = 4f
 private const val ICON_SIZE_UNITS = 2f
 private const val HORIZONTAL_PADDING_UNITS = 2f
 private const val TOP_MARGIN_UNITS = 1f
+private const val UNSELECTED_ALPHA = 0.5f
 
 /**
  * Persistent tab bar shown on every screen. Unlike [com.thelightphone.sdk.ui.LightBottomBar] +
  * [com.thelightphone.sdk.ui.LightIcon], this renders icons with an explicit per-tab tint
- * (white for the active tab, secondary/grey otherwise) since the SDK's icon APIs always
- * tint from the theme uniformly and don't expose a per-call override.
+ * (always full color, with the inactive tabs faded via alpha) since the SDK's icon APIs
+ * always tint from the theme uniformly and don't expose a per-call override.
  */
 @Composable
 fun BottomNavBar(
@@ -45,11 +47,12 @@ fun BottomNavBar(
     ) {
         AppTab.entries.forEach { tab ->
             val selected = tab == current
-            val tint = if (selected) LightThemeTokens.colors.content else LightThemeTokens.colors.contentSecondary
+            val tint = LightThemeTokens.colors.content
 
             Box(
                 modifier = Modifier
                     .height(BOTTOMBAR_HEIGHT_UNITS.gridUnitsAsDp())
+                    .alpha(if (selected) 1f else UNSELECTED_ALPHA)
                     .clickable(enabled = !selected) { onNavigate(tab) },
                 contentAlignment = Alignment.Center,
             ) {

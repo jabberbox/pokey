@@ -186,8 +186,9 @@ class LogWeightScreen(
                 LightTopBar(
                     leftButton = LightBarButton.LightIcon(icon = LightIcons.BACK, onClick = { goBack() }),
                     center = LightTopBarCenter.Text(if (editingWeightId != null) "Edit Weight" else "Log Weight"),
-                    rightButton = LightBarButton.Text(
-                        text = "SAVE",
+                    rightButton = LightBarButton.Icon(
+                        painter = rememberCheckmarkPainter(),
+                        contentDescription = "Save",
                         onClick = { viewModel.submit(onLogged = { goBack() }) },
                     ),
                     modifier = Modifier.padding(bottom = 1f.gridUnitsAsDp()),

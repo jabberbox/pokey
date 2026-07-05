@@ -190,8 +190,9 @@ class LogShotScreen(
                 LightTopBar(
                     leftButton = LightBarButton.LightIcon(icon = LightIcons.BACK, onClick = { goBack() }),
                     center = LightTopBarCenter.Text(if (editingShotId != null) "Edit Shot" else "Log Shot"),
-                    rightButton = LightBarButton.Text(
-                        text = "SAVE",
+                    rightButton = LightBarButton.Icon(
+                        painter = rememberCheckmarkPainter(),
+                        contentDescription = "Save",
                         onClick = { viewModel.submit(onLogged = { goBack() }) },
                     ),
                     modifier = Modifier.padding(bottom = 1f.gridUnitsAsDp()),

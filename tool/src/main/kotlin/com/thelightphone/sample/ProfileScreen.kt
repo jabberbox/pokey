@@ -26,7 +26,6 @@ import com.thelightphone.sdk.ui.LightTopBarCenter
 import com.thelightphone.sdk.ui.gridUnitsAsDp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import kotlin.math.round
 
 private const val DEFAULT_WEIGHT_LBS = 150.0
 
@@ -52,35 +51,15 @@ class ProfileViewModel(
         }
     }
 
-    fun selectWeightUnit(unit: WeightUnit) {
-        viewModelScope.launch { setWeightUnit(lightContext.dataStore, unit) }
+    fun toggleWeightUnit() {
+        val next = if (weightUnit.value == WeightUnit.LBS) WeightUnit.KG else WeightUnit.LBS
+        viewModelScope.launch { setWeightUnit(lightContext.dataStore, next) }
     }
 
-    fun selectTimeFormat(format: TimeFormat) {
-        viewModelScope.launch { setTimeFormat(lightContext.dataStore, format) }
+    fun toggleTimeFormat() {
+        val next = if (timeFormat.value == TimeFormat.HOUR_12) TimeFormat.HOUR_24 else TimeFormat.HOUR_12
+        viewModelScope.launch { setTimeFormat(lightContext.dataStore, next) }
     }
-
-    fun shiftBeginningWeightWhole(amount: Int) = shiftBeginningWeight(amount.toDouble())
-
-    fun shiftBeginningWeightTenth(tenths: Int) = shiftBeginningWeight(tenths / 10.0)
-
-    private fun shiftBeginningWeight(amount: Double) {
-        val newValue = roundToOneDecimal((beginningWeightValue.value + amount).coerceAtLeast(0.0))
-        beginningWeightValue.value = newValue
-        viewModelScope.launch { setBeginningWeight(lightContext.dataStore, newValue.displayToLbs(weightUnit.value)) }
-    }
-
-    fun shiftGoalWeightWhole(amount: Int) = shiftGoalWeight(amount.toDouble())
-
-    fun shiftGoalWeightTenth(tenths: Int) = shiftGoalWeight(tenths / 10.0)
-
-    private fun shiftGoalWeight(amount: Double) {
-        val newValue = roundToOneDecimal((goalWeightValue.value + amount).coerceAtLeast(0.0))
-        goalWeightValue.value = newValue
-        viewModelScope.launch { setGoalWeight(lightContext.dataStore, newValue.displayToLbs(weightUnit.value)) }
-    }
-
-    private fun roundToOneDecimal(value: Double) = round(value * 10) / 10.0
 }
 
 class ProfileScreen(
@@ -117,57 +96,31 @@ class ProfileScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 1f.gridUnitsAsDp()),
                 ) {
-                    ToggleSelectorRow(
-                        optionOff = WeightUnit.LBS,
-                        optionOn = WeightUnit.KG,
-                        selected = weightUnit,
-                        labelOff = WeightUnit.LBS.label,
-                        labelOn = WeightUnit.KG.label,
-                        onSelect = viewModel::selectWeightUnit,
+                    SelectSettingRow(
+                        label = "Units",
+                        value = weightUnit.label,
+                        onClick = viewModel::toggleWeightUnit,
+                    )
+                    SelectSettingRow(
+                        label = "Beginning weight",
+                        value = "%.1f %s".format(beginningWeightValue, weightUnit.label),
+                        onClick = {
+                            navigateTo(screenFactory = { ProfileWeightEditScreen(it, ProfileWeightField.BEGINNING) })
+                        },
+                    )
+                    SelectSettingRow(
+                        label = "Goal weight",
+                        value = "%.1f %s".format(goalWeightValue, weightUnit.label),
+                        onClick = {
+                            navigateTo(screenFactory = { ProfileWeightEditScreen(it, ProfileWeightField.GOAL) })
+                        },
+                    )
+                    SelectSettingRow(
+                        label = "Time Format",
+                        value = timeFormat.label,
+                        onClick = viewModel::toggleTimeFormat,
                         modifier = Modifier.padding(bottom = 1f.gridUnitsAsDp()),
-                        title = "Units",
                     )
-
-                    LightText(
-                        text = "Beginning weight",
-                        variant = LightTextVariant.Detail,
-                        modifier = Modifier.padding(bottom = 0.25f.gridUnitsAsDp()),
-                    )
-                    WeightSpinnerRow(
-                        weightValue = beginningWeightValue,
-                        unitLabel = weightUnit.label,
-                        onShiftWhole = viewModel::shiftBeginningWeightWhole,
-                        onShiftTenth = viewModel::shiftBeginningWeightTenth,
-                        centered = false,
-                        modifier = Modifier.padding(bottom = 1.5f.gridUnitsAsDp()),
-                    )
-
-                    LightText(
-                        text = "Goal weight",
-                        variant = LightTextVariant.Detail,
-                        modifier = Modifier.padding(bottom = 0.25f.gridUnitsAsDp()),
-                    )
-                    WeightSpinnerRow(
-                        weightValue = goalWeightValue,
-                        unitLabel = weightUnit.label,
-                        onShiftWhole = viewModel::shiftGoalWeightWhole,
-                        onShiftTenth = viewModel::shiftGoalWeightTenth,
-                        centered = false,
-                        modifier = Modifier.padding(bottom = 1.5f.gridUnitsAsDp()),
-                    )
-
-                    ToggleSelectorRow(
-                        optionOff = TimeFormat.HOUR_12,
-                        optionOn = TimeFormat.HOUR_24,
-                        selected = timeFormat,
-                        labelOff = TimeFormat.HOUR_12.label,
-                        labelOn = TimeFormat.HOUR_24.label,
-                        onSelect = viewModel::selectTimeFormat,
-                        modifier = Modifier.padding(bottom = 1.5f.gridUnitsAsDp()),
-                        title = "Time Format",
-                    )
-
-                    Divider(modifier = Modifier.padding(bottom = 1f.gridUnitsAsDp()))
 
                     LightText(
                         text = "Pokey (Build ${BuildConfig.VERSION_NAME})",

@@ -62,7 +62,6 @@ class LogChoiceScreen(
                             .clickable { navigateTo(screenFactory = { LogShotScreen(it) }) }
                             .padding(vertical = 1f.gridUnitsAsDp()),
                     )
-                    Divider()
                     LightText(
                         text = "Log Weight",
                         variant = LightTextVariant.Subheading,
