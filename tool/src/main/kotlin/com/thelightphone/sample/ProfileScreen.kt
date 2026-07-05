@@ -24,8 +24,10 @@ import com.thelightphone.sdk.ui.LightThemeTokens
 import com.thelightphone.sdk.ui.LightTopBar
 import com.thelightphone.sdk.ui.LightTopBarCenter
 import com.thelightphone.sdk.ui.gridUnitsAsDp
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private const val DEFAULT_WEIGHT_LBS = 150.0
 
@@ -53,12 +55,15 @@ class ProfileViewModel(
 
     fun toggleWeightUnit() {
         val next = if (weightUnit.value == WeightUnit.LBS) WeightUnit.KG else WeightUnit.LBS
-        viewModelScope.launch { setWeightUnit(lightContext.dataStore, next) }
+        // NonCancellable: navigating away (e.g. tapping another tab right after
+        // this) clears the ViewModel and cancels viewModelScope, which would
+        // otherwise cut this write off before it reaches disk.
+        viewModelScope.launch { withContext(NonCancellable) { setWeightUnit(lightContext.dataStore, next) } }
     }
 
     fun toggleTimeFormat() {
         val next = if (timeFormat.value == TimeFormat.HOUR_12) TimeFormat.HOUR_24 else TimeFormat.HOUR_12
-        viewModelScope.launch { setTimeFormat(lightContext.dataStore, next) }
+        viewModelScope.launch { withContext(NonCancellable) { setTimeFormat(lightContext.dataStore, next) } }
     }
 }
 

@@ -22,9 +22,11 @@ import com.thelightphone.sdk.ui.LightTopBar
 import com.thelightphone.sdk.ui.LightTopBarCenter
 import com.thelightphone.sdk.ui.gridUnitsAsDp
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.round
 
 private const val DEFAULT_WEIGHT_LBS = 150.0
@@ -62,10 +64,16 @@ class ProfileWeightEditViewModel(
         val newValue = roundToOneDecimal((weightValue.value + amount).coerceAtLeast(0.0))
         weightValue.value = newValue
         val weightLbs = newValue.displayToLbs(weightUnit.value)
+        // NonCancellable: tapping a spinner arrow and then immediately hitting
+        // Back clears this ViewModel and cancels viewModelScope, which would
+        // otherwise cut the write off before it reaches disk (this was the
+        // cause of goal weight silently not saving).
         viewModelScope.launch(Dispatchers.IO) {
-            when (field) {
-                ProfileWeightField.BEGINNING -> setBeginningWeight(lightContext.dataStore, weightLbs)
-                ProfileWeightField.GOAL -> setGoalWeight(lightContext.dataStore, weightLbs)
+            withContext(NonCancellable) {
+                when (field) {
+                    ProfileWeightField.BEGINNING -> setBeginningWeight(lightContext.dataStore, weightLbs)
+                    ProfileWeightField.GOAL -> setGoalWeight(lightContext.dataStore, weightLbs)
+                }
             }
         }
     }
