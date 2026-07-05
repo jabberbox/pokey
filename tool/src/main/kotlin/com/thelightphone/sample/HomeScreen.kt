@@ -163,7 +163,6 @@ class HomeScreen(sealedActivity: SealedLightActivity) : LightScreen<Unit, HomeSc
                             LightText(
                                 text = "Tap to dismiss",
                                 variant = LightTextVariant.Detail,
-                                lighten = true,
                                 align = TextAlign.Center,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -178,7 +177,6 @@ class HomeScreen(sealedActivity: SealedLightActivity) : LightScreen<Unit, HomeSc
                         LightText(
                             text = "No shots logged yet.",
                             variant = LightTextVariant.Copy,
-                            lighten = true,
                             modifier = Modifier.padding(bottom = 1.5f.gridUnitsAsDp()),
                         )
                     } else {
@@ -220,7 +218,6 @@ class HomeScreen(sealedActivity: SealedLightActivity) : LightScreen<Unit, HomeSc
                             "${"%.1f".format(weight.weightLbs.lbsToDisplay(weightUnit))} ${weightUnit.label}"
                         },
                         variant = LightTextVariant.Copy,
-                        lighten = true,
                     )
 
                     val goal = goalWeightLbs

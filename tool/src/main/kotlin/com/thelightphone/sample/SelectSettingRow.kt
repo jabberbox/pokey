@@ -37,7 +37,6 @@ fun SelectSettingRow(
         LightText(
             text = label,
             variant = LightTextVariant.Detail,
-            lighten = true,
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,

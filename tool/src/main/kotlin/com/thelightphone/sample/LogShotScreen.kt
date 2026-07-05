@@ -261,7 +261,6 @@ class LogShotScreen(
                         LightText(
                             text = it,
                             variant = LightTextVariant.Detail,
-                            lighten = true,
                             modifier = Modifier.padding(top = 1f.gridUnitsAsDp()),
                         )
                     }

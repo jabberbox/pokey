@@ -41,14 +41,12 @@ fun <T> FieldSelectorRow(
                 LightText(
                     text = label(field),
                     variant = LightTextVariant.Subheading,
-                    lighten = field != selected,
                     align = TextAlign.Center,
                 )
                 if (value != null) {
                     LightText(
                         text = value(field),
                         variant = LightTextVariant.Fine,
-                        lighten = true,
                         align = TextAlign.Center,
                         modifier = Modifier.padding(top = 0.25f.gridUnitsAsDp()),
                     )

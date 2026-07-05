@@ -111,7 +111,6 @@ class HistoryScreen(
                             text = "No entries yet.",
                             variant = LightTextVariant.Copy,
                             align = TextAlign.Center,
-                            lighten = true,
                             modifier = Modifier.padding(horizontal = 1f.gridUnitsAsDp()),
                         )
                     }
@@ -149,7 +148,6 @@ class HistoryScreen(
                                     LightText(
                                         text = date,
                                         variant = LightTextVariant.Detail,
-                                        lighten = true,
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(top = 0.75f.gridUnitsAsDp()),
@@ -157,7 +155,6 @@ class HistoryScreen(
                                     LightText(
                                         text = label,
                                         variant = LightTextVariant.Copy,
-                                        lighten = item is HistoryItem.WeightItem,
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(top = 0.125f.gridUnitsAsDp(), bottom = 0.75f.gridUnitsAsDp()),
