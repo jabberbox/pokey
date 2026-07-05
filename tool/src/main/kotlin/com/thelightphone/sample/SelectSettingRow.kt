@@ -48,7 +48,7 @@ fun SelectSettingRow(
                 LightIcon(
                     icon = LightIcons.PENCIL,
                     size = 1.5f,
-                    modifier = Modifier.padding(start = 0.5f.gridUnitsAsDp()),
+                    modifier = Modifier.padding(start = 1f.gridUnitsAsDp()),
                 )
             }
         }
