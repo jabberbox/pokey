@@ -47,7 +47,6 @@ fun <T> ToggleSelectorRow(
             LightText(
                 text = title,
                 variant = LightTextVariant.Detail,
-                modifier = Modifier.padding(bottom = 0.5f.gridUnitsAsDp()),
             )
         }
         Row(
