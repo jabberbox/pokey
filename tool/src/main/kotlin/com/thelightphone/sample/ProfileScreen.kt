@@ -49,6 +49,21 @@ class ProfileViewModel(
                     .lbsToDisplay(profile.weightUnit)
                 goalWeightValue.value = (profile.goalWeightLbs ?: DEFAULT_WEIGHT_LBS)
                     .lbsToDisplay(profile.weightUnit)
+
+                // The fallback above is only ever a display value. If it's
+                // never actually written, it can look identical to a real,
+                // already-set value (e.g. a goal of 150 looks the same
+                // whether it's genuinely set or just the placeholder) while
+                // Home's "N lbs to goal" line silently never shows, since it
+                // treats null as "no goal set". Persist it as soon as it's
+                // first shown, so viewing Profile alone is enough -- no need
+                // to drill into the edit screen just to make it register.
+                if (profile.beginningWeightLbs == null) {
+                    withContext(NonCancellable) { setBeginningWeight(lightContext.dataStore, DEFAULT_WEIGHT_LBS) }
+                }
+                if (profile.goalWeightLbs == null) {
+                    withContext(NonCancellable) { setGoalWeight(lightContext.dataStore, DEFAULT_WEIGHT_LBS) }
+                }
             }
         }
     }
