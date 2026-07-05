@@ -53,17 +53,15 @@ class ProfileViewModel(
         }
     }
 
-    fun toggleWeightUnit() {
-        val next = if (weightUnit.value == WeightUnit.LBS) WeightUnit.KG else WeightUnit.LBS
+    fun selectWeightUnit(unit: WeightUnit) {
         // NonCancellable: navigating away (e.g. tapping another tab right after
         // this) clears the ViewModel and cancels viewModelScope, which would
         // otherwise cut this write off before it reaches disk.
-        viewModelScope.launch { withContext(NonCancellable) { setWeightUnit(lightContext.dataStore, next) } }
+        viewModelScope.launch { withContext(NonCancellable) { setWeightUnit(lightContext.dataStore, unit) } }
     }
 
-    fun toggleTimeFormat() {
-        val next = if (timeFormat.value == TimeFormat.HOUR_12) TimeFormat.HOUR_24 else TimeFormat.HOUR_12
-        viewModelScope.launch { withContext(NonCancellable) { setTimeFormat(lightContext.dataStore, next) } }
+    fun selectTimeFormat(format: TimeFormat) {
+        viewModelScope.launch { withContext(NonCancellable) { setTimeFormat(lightContext.dataStore, format) } }
     }
 }
 
@@ -101,10 +99,15 @@ class ProfileScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 1f.gridUnitsAsDp()),
                 ) {
-                    SelectSettingRow(
-                        label = "Units",
-                        value = weightUnit.label,
-                        onClick = viewModel::toggleWeightUnit,
+                    ToggleSelectorRow(
+                        optionOff = WeightUnit.LBS,
+                        optionOn = WeightUnit.KG,
+                        selected = weightUnit,
+                        labelOff = WeightUnit.LBS.label,
+                        labelOn = WeightUnit.KG.label,
+                        onSelect = viewModel::selectWeightUnit,
+                        modifier = Modifier.padding(bottom = 1.5f.gridUnitsAsDp()),
+                        title = "Units",
                     )
                     SelectSettingRow(
                         label = "Beginning weight",
@@ -112,6 +115,7 @@ class ProfileScreen(
                         onClick = {
                             navigateTo(screenFactory = { ProfileWeightEditScreen(it, ProfileWeightField.BEGINNING) })
                         },
+                        showEditIcon = true,
                     )
                     SelectSettingRow(
                         label = "Goal weight",
@@ -119,12 +123,17 @@ class ProfileScreen(
                         onClick = {
                             navigateTo(screenFactory = { ProfileWeightEditScreen(it, ProfileWeightField.GOAL) })
                         },
+                        showEditIcon = true,
                     )
-                    SelectSettingRow(
-                        label = "Time Format",
-                        value = timeFormat.label,
-                        onClick = viewModel::toggleTimeFormat,
-                        modifier = Modifier.padding(bottom = 1f.gridUnitsAsDp()),
+                    ToggleSelectorRow(
+                        optionOff = TimeFormat.HOUR_12,
+                        optionOn = TimeFormat.HOUR_24,
+                        selected = timeFormat,
+                        labelOff = TimeFormat.HOUR_12.label,
+                        labelOn = TimeFormat.HOUR_24.label,
+                        onSelect = viewModel::selectTimeFormat,
+                        modifier = Modifier.padding(top = 0.5f.gridUnitsAsDp(), bottom = 1.5f.gridUnitsAsDp()),
+                        title = "Time Format",
                     )
 
                     LightText(
