@@ -120,6 +120,14 @@ class ProfileWeightEditScreen(
                 LightTopBar(
                     leftButton = LightBarButton.LightIcon(icon = LightIcons.BACK, onClick = { goBack() }),
                     center = LightTopBarCenter.Text(field.title),
+                    // Every adjustment already saves immediately (see shift()), so this
+                    // doesn't commit anything Back wouldn't -- it's here so the save
+                    // affordance matches Log Shot/Log Weight's disk icon for continuity.
+                    rightButton = LightBarButton.Icon(
+                        painter = rememberSaveIconPainter(),
+                        contentDescription = "Save",
+                        onClick = { goBack() },
+                    ),
                     modifier = Modifier.padding(bottom = 1f.gridUnitsAsDp()),
                 )
 
