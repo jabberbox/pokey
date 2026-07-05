@@ -12,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewModelScope
 import com.thelightphone.sdk.InitialScreen
@@ -41,6 +42,9 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import kotlin.math.abs
 import kotlin.math.round
+
+// Bump in 0.1 steps while dialing in the right size for the arc + text block.
+private const val HOME_CONTENT_SCALE = 1.2f
 
 internal val DISPLAY_DATE_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy")
 
@@ -145,7 +149,8 @@ class HomeScreen(sealedActivity: SealedLightActivity) : LightScreen<Unit, HomeSc
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
-                        .padding(horizontal = 1f.gridUnitsAsDp()),
+                        .padding(horizontal = 1f.gridUnitsAsDp())
+                        .scale(HOME_CONTENT_SCALE),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
