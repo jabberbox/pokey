@@ -35,17 +35,20 @@ fun NextDoseArc(
     tertiaryText: String,
     modifier: Modifier = Modifier,
 ) {
-    val trackColor = LightThemeTokens.colors.contentSecondary
+    // Same treatment as the bottom nav's unselected tabs: full color at half
+    // alpha, not the separate contentSecondary gray token, so this and the
+    // nav bar read as the same "dimmed" gray.
     val progressColor = LightThemeTokens.colors.content
+    val trackColor = progressColor.copy(alpha = 0.5f)
     // gridUnitsAsDp() is @Composable (reads LocalConfiguration), so it has to
     // be resolved here and handed into the Canvas as a plain Dp -- the draw
     // lambda below isn't a composable context.
-    val strokeWidthDp = 1.2f.gridUnitsAsDp()
+    val strokeWidthDp = 0.72f.gridUnitsAsDp()
 
     Box(
         modifier = modifier
-            .width(22f.gridUnitsAsDp())
-            .height(12f.gridUnitsAsDp()),
+            .width(13.2f.gridUnitsAsDp())
+            .height(7.2f.gridUnitsAsDp()),
         contentAlignment = Alignment.BottomCenter,
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
@@ -81,16 +84,16 @@ fun NextDoseArc(
         }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(bottom = 0.25f.gridUnitsAsDp()),
+            modifier = Modifier.padding(bottom = 0.15f.gridUnitsAsDp()),
         ) {
-            LightText(text = primaryText, variant = LightTextVariant.Heading, align = TextAlign.Center)
-            LightText(text = secondaryText, variant = LightTextVariant.Copy, align = TextAlign.Center)
+            LightText(text = primaryText, variant = LightTextVariant.Fine, align = TextAlign.Center)
+            LightText(text = secondaryText, variant = LightTextVariant.Detail, align = TextAlign.Center)
             LightText(
                 text = tertiaryText,
-                variant = LightTextVariant.Detail,
+                variant = LightTextVariant.Superfine,
                 align = TextAlign.Center,
                 lighten = true,
-                modifier = Modifier.padding(top = 0.25f.gridUnitsAsDp()),
+                modifier = Modifier.padding(top = 0.15f.gridUnitsAsDp()),
             )
         }
     }
