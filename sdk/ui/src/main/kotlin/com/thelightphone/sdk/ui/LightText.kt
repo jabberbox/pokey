@@ -82,6 +82,7 @@ fun LightText(
     underline: Boolean = false,
     monospace: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
+    minLines: Int = 1,
     overflow: TextOverflow = TextOverflow.Clip,
     color: Color? = null,
 ) {
@@ -103,6 +104,7 @@ fun LightText(
         color = baseColor.takeUnless { it == Color.Unspecified } ?: LocalContentColor.current,
         style = style,
         maxLines = maxLines,
+        minLines = minLines,
         overflow = overflow,
     )
 }

@@ -248,7 +248,7 @@ class LogShotScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable { viewModel.selectSite(site) }
-                                        .padding(vertical = 0.45f.gridUnitsAsDp()),
+                                        .padding(vertical = 0.25f.gridUnitsAsDp()),
                                 ) {
                                     RadioIndicator(
                                         selected = selectedSite == site,

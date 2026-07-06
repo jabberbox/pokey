@@ -53,10 +53,14 @@ fun <T> FieldSelectorRow(
                         align = TextAlign.Center,
                         // Some values (e.g. "Abdomen: Right") are long enough
                         // to wrap in this ~1/3-width column on real device
-                        // fonts even when they fit fine in the emulator --
-                        // wrapping grows this row's height and pushes the
-                        // content below it down. Cap at one line instead.
-                        maxLines = 1,
+                        // fonts, even though they fit on one line in the
+                        // emulator. Reserving 2 lines for every tab (not just
+                        // the ones that need it) keeps this row's height
+                        // constant regardless of which value is showing,
+                        // instead of clipping the text or letting the row
+                        // grow and push the content below it down.
+                        minLines = 2,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(top = 0.25f.gridUnitsAsDp()),
                     )
