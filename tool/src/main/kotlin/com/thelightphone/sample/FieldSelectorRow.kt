@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import com.thelightphone.sdk.ui.LightText
 import com.thelightphone.sdk.ui.LightTextVariant
 import com.thelightphone.sdk.ui.gridUnitsAsDp
@@ -50,6 +51,13 @@ fun <T> FieldSelectorRow(
                         variant = LightTextVariant.Fine,
                         lighten = field != selected,
                         align = TextAlign.Center,
+                        // Some values (e.g. "Abdomen: Right") are long enough
+                        // to wrap in this ~1/3-width column on real device
+                        // fonts even when they fit fine in the emulator --
+                        // wrapping grows this row's height and pushes the
+                        // content below it down. Cap at one line instead.
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(top = 0.25f.gridUnitsAsDp()),
                     )
                 }
