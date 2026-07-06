@@ -25,8 +25,8 @@ the repository's URL to receive updates.
   automatically (cycling through sites so you're not reusing the same spot back to
   back).
 - **Weight logging** — defaults to your last logged weight so re-entry is quick.
-- **7-day reminder** — an in-app banner appears once a shot is genuinely due; logging
-  a new shot resets the countdown.
+- **7-day countdown** — a gauge on Home counts down to your next shot, then
+  switches to how overdue it is until you log a new one.
 - **Editable history** — tap any past entry to correct or delete it.
 - **Goal tracking** — set a beginning and goal weight in Profile; Home shows how far
   you are from goal.

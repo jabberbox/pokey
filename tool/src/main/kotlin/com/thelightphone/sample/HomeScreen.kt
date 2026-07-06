@@ -1,7 +1,6 @@
 package com.thelightphone.sample
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewModelScope
 import com.thelightphone.sdk.InitialScreen
 import com.thelightphone.sdk.LightScreen
@@ -40,7 +38,6 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import kotlin.math.abs
 import kotlin.math.round
 
 // Bump in 0.1 steps while dialing in the right size for the arc + text block.
@@ -56,9 +53,36 @@ internal fun Long.toZonedDateTime(): ZonedDateTime =
 
 internal fun Long.toLocalTime(): LocalTime = toZonedDateTime().toLocalTime()
 
-/** e.g. 2 -> "2 days"; 1 -> "1 day"; 0 -> "Less than a day" */
-internal fun formatDays(days: Long): String =
-    if (days > 0) "$days day${if (days == 1L) "" else "s"}" else "Less than a day"
+/**
+ * Countdown to a shot that isn't due yet: days while more than a day
+ * remains, hours inside the final 24 hours (so the text stays short enough
+ * to fit the arc, instead of a fixed "Less than a day" that overflowed it).
+ * Partial hours round up so a handful of remaining minutes still reads as
+ * "1 hour" rather than "0 hours".
+ */
+internal fun formatDueIn(minutesUntil: Long): String {
+    val hours = minutesUntil / 60
+    if (hours >= 24) {
+        val days = hours / 24
+        return "$days day${if (days == 1L) "" else "s"}"
+    }
+    val roundedHours = ((minutesUntil + 59) / 60).coerceAtLeast(1)
+    return "$roundedHours hour${if (roundedHours == 1L) "" else "s"}"
+}
+
+/**
+ * How long past due: hours for the first day overdue, days after that.
+ * Expects [overdueMinutes] >= 60 -- anything under an hour overdue is its
+ * own "Shot Due" state instead.
+ */
+internal fun formatOverdue(overdueMinutes: Long): String {
+    val hours = overdueMinutes / 60
+    if (hours >= 24) {
+        val days = hours / 24
+        return "$days day${if (days == 1L) "" else "s"}"
+    }
+    return "$hours hour${if (hours == 1L) "" else "s"}"
+}
 
 class HomeScreenViewModel(
     private val shotRepository: ShotRepository,
@@ -68,16 +92,11 @@ class HomeScreenViewModel(
 
     val latestShot = MutableStateFlow<LoggedShot?>(null)
     val latestWeight = MutableStateFlow<LoggedWeight?>(null)
-    val reminderFiredAt = MutableStateFlow<Long?>(null)
     val goalWeightLbs = MutableStateFlow<Double?>(null)
     val weightUnit = MutableStateFlow(WeightUnit.LBS)
     val timeFormat = MutableStateFlow(TimeFormat.HOUR_12)
 
     init {
-        ReminderScheduler.ensureScheduled(lightContext)
-        viewModelScope.launch {
-            reminderFiredAtFlow(lightContext.dataStore).collect { reminderFiredAt.value = it }
-        }
         viewModelScope.launch {
             profileFlow(lightContext.dataStore).collect { profile ->
                 goalWeightLbs.value = profile.goalWeightLbs
@@ -93,10 +112,6 @@ class HomeScreenViewModel(
             latestShot.value = shotRepository.getLatestShot()
             latestWeight.value = weightRepository.getLatestWeight()
         }
-    }
-
-    fun dismissReminder() {
-        viewModelScope.launch { clearReminderFired(lightContext.dataStore) }
     }
 }
 
@@ -120,7 +135,6 @@ class HomeScreen(sealedActivity: SealedLightActivity) : LightScreen<Unit, HomeSc
     override fun Content() {
         val latestShot by viewModel.latestShot.collectAsState()
         val latestWeight by viewModel.latestWeight.collectAsState()
-        val reminderFiredAt by viewModel.reminderFiredAt.collectAsState()
         val goalWeightLbs by viewModel.goalWeightLbs.collectAsState()
         val weightUnit by viewModel.weightUnit.collectAsState()
         val timeFormat by viewModel.timeFormat.collectAsState()
@@ -146,31 +160,6 @@ class HomeScreen(sealedActivity: SealedLightActivity) : LightScreen<Unit, HomeSc
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    if (reminderFiredAt != null) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { viewModel.dismissReminder() }
-                                .padding(bottom = 1.5f.gridUnitsAsDp()),
-                        ) {
-                            LightText(
-                                text = "Reminder: Shot day!",
-                                variant = LightTextVariant.Subheading,
-                                align = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth(),
-                            )
-                            LightText(
-                                text = "Tap to dismiss",
-                                variant = LightTextVariant.Detail,
-                                align = TextAlign.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 0.25f.gridUnitsAsDp(), bottom = 0.5f.gridUnitsAsDp()),
-                            )
-                            Divider()
-                        }
-                    }
-
                     val shot = latestShot
                     if (shot == null) {
                         LightText(
@@ -183,9 +172,7 @@ class HomeScreen(sealedActivity: SealedLightActivity) : LightScreen<Unit, HomeSc
                         val nextShotDateTime = lastShotDateTime.plusDays(7)
                         val now = ZonedDateTime.now()
                         val minutesUntil = ChronoUnit.MINUTES.between(now, nextShotDateTime)
-                        val isOverdue = minutesUntil < 0
-                        val absMinutes = abs(minutesUntil)
-                        val days = absMinutes / (24 * 60)
+                        val overdueMinutes = -minutesUntil
 
                         val totalCycleMinutes = 7 * 24 * 60
                         val elapsedMinutes = (totalCycleMinutes - minutesUntil).coerceIn(0, totalCycleMinutes.toLong())
@@ -194,13 +181,14 @@ class HomeScreen(sealedActivity: SealedLightActivity) : LightScreen<Unit, HomeSc
                         NextDoseArc(
                             progress = progress,
                             primaryText = when {
-                                absMinutes == 0L -> "Due now"
-                                isOverdue -> "Overdue"
-                                else -> formatDays(days)
+                                minutesUntil > 0 -> formatDueIn(minutesUntil).replaceFirstChar { it.uppercase() }
+                                overdueMinutes < 60 -> "Shot Due"
+                                else -> "Overdue"
                             },
                             secondaryText = when {
-                                isOverdue && absMinutes != 0L -> "by ${formatDays(days)}"
-                                else -> "to next shot"
+                                minutesUntil > 0 -> "to next shot"
+                                overdueMinutes < 60 -> ""
+                                else -> "by ${formatOverdue(overdueMinutes)}"
                             },
                             tertiaryText = timeFormat.nextDoseFormatter().format(nextShotDateTime),
                             modifier = Modifier.padding(bottom = 1.5f.gridUnitsAsDp()),

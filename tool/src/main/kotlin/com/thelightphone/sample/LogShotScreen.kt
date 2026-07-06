@@ -139,8 +139,6 @@ class LogShotViewModel(
             } else {
                 repository.logShot(timestampMillis, site)
             }
-            clearReminderFired(lightContext.dataStore)
-            ReminderScheduler.ensureScheduled(lightContext)
             withContext(Dispatchers.Main) {
                 onLogged()
             }
