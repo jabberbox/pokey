@@ -6,6 +6,19 @@ Pokey keeps things simple: log a shot, log a weight, see how you're trending tow
 your goal, and get reminded when the next shot is due. No accounts, no cloud sync,
 no ads — everything lives on-device.
 
+## Installing
+
+The latest .apk file is available in [releases](../../releases).
+
+I recommend using [Obtainium](https://github.com/ImranR98/Obtainium) and adding
+the repository's URL to receive updates.
+
+## Screenshots
+
+| Home | Log Shot | Profile |
+|---|---|---|
+| ![Home](screenshots/home.png) | ![Log Shot](screenshots/log-shot.png) | ![Profile](screenshots/profile.png) |
+
 ## Features
 
 - **Shot logging** — date, time, and injection site, with the next site suggested
@@ -19,22 +32,6 @@ no ads — everything lives on-device.
   you are from goal.
 - **lbs/kg and 12hr/24hr toggles** — pick your preferred units and time format once
   in Profile; every screen respects it.
-
-## Screenshots
-
-| Home | Log | Log Shot |
-|---|---|---|
-| ![Home](screenshots/home.png) | ![Log](screenshots/log-menu.png) | ![Log Shot](screenshots/log-shot.png) |
-
-| Log Weight | History | Profile |
-|---|---|---|
-| ![Log Weight](screenshots/log-weight.png) | ![History](screenshots/history.png) | ![Profile](screenshots/profile.png) |
-
-## Installing
-
-Grab the latest APK from the [Releases](../../releases) page and sideload it onto
-your Light Phone III (or an Android emulator configured to run the
-[LightOS Emulator](sdk/emulator)).
 
 ## Building from source
 
