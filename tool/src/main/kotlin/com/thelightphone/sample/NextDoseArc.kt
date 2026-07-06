@@ -86,8 +86,8 @@ fun NextDoseArc(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(bottom = 0.15f.gridUnitsAsDp()),
         ) {
-            LightText(text = primaryText, variant = LightTextVariant.Copy, align = TextAlign.Center)
-            LightText(text = secondaryText, variant = LightTextVariant.Fine, align = TextAlign.Center)
+            LightText(text = primaryText, variant = LightTextVariant.Heading, align = TextAlign.Center)
+            LightText(text = secondaryText, variant = LightTextVariant.Copy, align = TextAlign.Center)
             LightText(
                 text = tertiaryText,
                 variant = LightTextVariant.Detail,

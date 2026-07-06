@@ -209,7 +209,7 @@ class HomeScreen(sealedActivity: SealedLightActivity) : LightScreen<Unit, HomeSc
 
                     LightText(
                         text = "Current Weight",
-                        variant = LightTextVariant.Detail,
+                        variant = LightTextVariant.Fine,
                         modifier = Modifier.padding(bottom = 0.25f.gridUnitsAsDp()),
                     )
                     val weight = latestWeight
@@ -219,7 +219,7 @@ class HomeScreen(sealedActivity: SealedLightActivity) : LightScreen<Unit, HomeSc
                         } else {
                             "${"%.1f".format(weight.weightLbs.lbsToDisplay(weightUnit))} ${weightUnit.label}"
                         },
-                        variant = LightTextVariant.Copy,
+                        variant = LightTextVariant.Heading,
                     )
 
                     val goal = goalWeightLbs
@@ -231,7 +231,7 @@ class HomeScreen(sealedActivity: SealedLightActivity) : LightScreen<Unit, HomeSc
                                 diff < 0.0 -> "${"%.1f".format(-diff)} ${weightUnit.label} past goal"
                                 else -> "At goal weight"
                             },
-                            variant = LightTextVariant.Detail,
+                            variant = LightTextVariant.Fine,
                             lighten = true,
                             modifier = Modifier.padding(top = 0.25f.gridUnitsAsDp()),
                         )
