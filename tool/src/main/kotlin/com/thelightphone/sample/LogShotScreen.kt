@@ -285,7 +285,7 @@ class LogShotScreen(
                                         viewModel.armDelete()
                                     }
                                 }
-                                .padding(top = 2f.gridUnitsAsDp()),
+                                .padding(top = 4f.gridUnitsAsDp()),
                         )
                     }
                 }
