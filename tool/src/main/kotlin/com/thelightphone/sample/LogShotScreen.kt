@@ -210,7 +210,7 @@ class LogShotScreen(
                         when (field) {
                             LogShotField.DATE -> DISPLAY_DATE_FORMAT.format(selectedDate)
                             LogShotField.TIME -> timeFormat.timeFormatter().format(selectedTime)
-                            LogShotField.SITE -> selectedSite?.label ?: "Not selected"
+                            LogShotField.SITE -> selectedSite?.shortLabel ?: "Not selected"
                         }
                     },
                     onSelect = viewModel::selectField,
