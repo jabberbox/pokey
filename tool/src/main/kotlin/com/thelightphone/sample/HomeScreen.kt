@@ -233,7 +233,7 @@ class HomeScreen(sealedActivity: SealedLightActivity) : LightScreen<Unit, HomeSc
                             },
                             variant = LightTextVariant.Detail,
                             lighten = true,
-                            modifier = Modifier.padding(top = 0.25f.gridUnitsAsDp()),
+                            modifier = Modifier.padding(top = 1f.gridUnitsAsDp()),
                         )
                     }
                 }

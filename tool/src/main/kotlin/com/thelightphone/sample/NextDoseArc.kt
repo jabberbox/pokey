@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -88,7 +89,9 @@ fun NextDoseArc(
         // upper dome empty.
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(y = 0.35f.gridUnitsAsDp()),
         ) {
             LightText(text = primaryText, variant = LightTextVariant.Heading, align = TextAlign.Center)
             LightText(text = secondaryText, variant = LightTextVariant.Copy, align = TextAlign.Center)
