@@ -82,19 +82,23 @@ fun NextDoseArc(
                 size = arcSize,
             )
         }
+        // The day count/subtitle move up into the dome on their own, while the
+        // date line stays pinned down at the arc's flat opening -- rather than
+        // clustering all three lines together at the bottom, which left the
+        // upper dome empty.
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(bottom = 0.15f.gridUnitsAsDp()),
+            modifier = Modifier.align(Alignment.Center),
         ) {
             LightText(text = primaryText, variant = LightTextVariant.Heading, align = TextAlign.Center)
             LightText(text = secondaryText, variant = LightTextVariant.Copy, align = TextAlign.Center)
-            LightText(
-                text = tertiaryText,
-                variant = LightTextVariant.Detail,
-                align = TextAlign.Center,
-                lighten = true,
-                modifier = Modifier.padding(top = 0.15f.gridUnitsAsDp()),
-            )
         }
+        LightText(
+            text = tertiaryText,
+            variant = LightTextVariant.Detail,
+            align = TextAlign.Center,
+            lighten = true,
+            modifier = Modifier.align(Alignment.BottomCenter),
+        )
     }
 }

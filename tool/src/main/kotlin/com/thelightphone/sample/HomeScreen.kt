@@ -231,7 +231,7 @@ class HomeScreen(sealedActivity: SealedLightActivity) : LightScreen<Unit, HomeSc
                                 diff < 0.0 -> "${"%.1f".format(-diff)} ${weightUnit.label} past goal"
                                 else -> "At goal weight"
                             },
-                            variant = LightTextVariant.Fine,
+                            variant = LightTextVariant.Detail,
                             lighten = true,
                             modifier = Modifier.padding(top = 0.25f.gridUnitsAsDp()),
                         )
