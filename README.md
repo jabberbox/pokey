@@ -6,6 +6,8 @@ Pokey keeps things simple: log a shot, log a weight, see how you're trending tow
 your goal, and get reminded when the next shot is due. No accounts, no cloud sync,
 no ads — everything lives on-device.
 
+If Pokey is useful to you, [buy me a coffee](https://ko-fi.com/jabberbox) to help keep it going.
+
 ## Installing
 
 The latest .apk file is available in [releases](../../releases).
