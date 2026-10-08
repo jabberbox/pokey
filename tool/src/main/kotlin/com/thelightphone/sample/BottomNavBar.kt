@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
-import com.thelightphone.sdk.ui.LightSurfaceScheme
 import com.thelightphone.sdk.ui.LightThemeTokens
 import com.thelightphone.sdk.ui.gridUnitsAsDp
 
@@ -72,12 +71,8 @@ fun BottomNavBar(
                 if (icon == null) {
                     GoogleIcon(pathData = HOME_ICON_PATH, tint = tint, sizeUnits = HOME_ICON_SIZE_UNITS)
                 } else {
-                    val drawableId = when (LightThemeTokens.surfaceScheme) {
-                        LightSurfaceScheme.Dark -> icon.darkModeResource
-                        LightSurfaceScheme.Light -> icon.lightModeResource
-                    }
                     Icon(
-                        painter = painterResource(drawableId),
+                        painter = painterResource(icon.drawableResource),
                         contentDescription = icon.name,
                         tint = tint,
                         modifier = Modifier.size(ICON_SIZE_UNITS.gridUnitsAsDp()),

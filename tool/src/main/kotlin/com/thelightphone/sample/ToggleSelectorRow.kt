@@ -68,7 +68,7 @@ fun <T> ToggleSelectorRow(
                     .padding(end = 0.5f.gridUnitsAsDp()),
             )
             LightIcon(
-                icon = if (isOn) LightIcons.TOGGLE_OFF else LightIcons.TOGGLE_ON,
+                icon = if (isOn) LightIcons.TOGGLE_STATE_OFF else LightIcons.TOGGLE_STATE_ON,
                 size = 1.5f,
                 modifier = Modifier.clickable { onSelect(if (isOn) optionOff else optionOn) },
             )
