@@ -4,12 +4,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.thelightphone.sdk.ui.LightText
 import com.thelightphone.sdk.ui.LightTextVariant
 import com.thelightphone.sdk.ui.gridUnitsAsDp
@@ -51,18 +53,11 @@ fun <T> FieldSelectorRow(
                         variant = LightTextVariant.Fine,
                         lighten = field != selected,
                         align = TextAlign.Center,
-                        // Some values (e.g. "Abdomen: Right") are long enough
-                        // to wrap in this ~1/3-width column on real device
-                        // fonts, even though they fit on one line in the
-                        // emulator. Reserving 2 lines for every tab (not just
-                        // the ones that need it) keeps this row's height
-                        // constant regardless of which value is showing,
-                        // instead of clipping the text or letting the row
-                        // grow and push the content below it down.
-                        minLines = 2,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(top = 0.25f.gridUnitsAsDp()),
+                        modifier = Modifier
+                            .padding(top = 0.25f.gridUnitsAsDp())
+                            .heightIn(min = 32.dp),
                     )
                 }
             }
