@@ -1,7 +1,0 @@
-[tool]
-id = "com.thelightphone.reddit"
-label = "Reddit"
-versionCode = 1
-versionName = "1.0"
-permissions = ["android.permission.INTERNET"]
-serverPackage = "com.lightos"
